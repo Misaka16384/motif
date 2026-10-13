@@ -23,7 +23,7 @@ Build a lightweight, distributable skill for researchers who know their work. Th
 
 ## Current state
 
-- Version: 0.1.0 released; native-autoplay correction 0.1.1 implemented and under verification.
+- Version: 0.1.1 released; native-autoplay correction verified and documented.
 - Implemented: core skill, references, generic starter, local project discovery/setup/build/check/export/preview, logic tests, release packaging.
 - Passed: package/skill validation, 26 logic tests (one Windows-only symlink skip), actual formula compilation and smoke render, final 2560×1440/60 fps render, frame-cadence checks, HTML/PPTX export, and cache reuse.
 - Independent review: completed; findings about early setup, environment replacement discovery, ZIP layout, scene selection and video timing/target validation were corrected and rechecked.
@@ -46,9 +46,10 @@ Build a lightweight, distributable skill for researchers who know their work. Th
 - Shared export now normalizes the native command/main-sequence timing and validates its activation path. A separate click-to-pause branch is retained. The normalizer preserves other XML/media and rejects unrelated animations.
 - Passed: raw/click-trigger exports rejected, corrected reference and normalized copy accepted across 104 slides. All 104 timing trees match the corrected reference; all 104 videos, 118 relationships and other package members remain unchanged. Original input hashes preserved.
 - Passed: actual cached-media HTML/PPTX export, no render-cache changes, new exports still marked `player_tested=false`. Evidence: local `.runtime/autoplay/` reports (excluded from publication).
-- Review found and corrected three validation/guard gaps; corresponding regression cases and the independent focused recheck pass. Pending: release 0.1.1.
+- Review found and corrected three validation/guard gaps; corresponding regression cases and the independent focused recheck pass.
+- Release 0.1.1 published: `https://github.com/Misaka16384/research-talk/releases/tag/v0.1.1`. Cross-platform validation and release jobs passed for commit `1117ca5` (runs `38367353829`, `38367358760`, `38367358741`). Both release ZIPs present.
 - Public README anonymity is enforced for this project; the previous plugin ZIP was replaced with anonymized documentation.
 
 ## Next step
 
-Publish correction 0.1.1 and verify the release workflow/assets. Keep the reference deck intact. Distinguish the user's real-player evidence for the reference artifact from fresh exports' package checks.
+The requested autoplay preservation and public README anonymization are complete. Continue with the next requested project/toolkit revision. Keep the reference deck intact. Distinguish the user's real-player evidence for the reference artifact from fresh exports' package checks.
