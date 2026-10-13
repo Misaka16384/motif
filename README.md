@@ -43,11 +43,31 @@ For guided installation, send your local AI assistant this request:
 For an installation request, use the following checklist and honor choices the user has already specified:
 
 1. **Identify the destination.** Check the current AI host, workspace and any existing Motif installation. Resolve only missing choices: which hosts to install for, and project or user scope. For project scope, use the selected workspace.
-2. **Install in the chosen scope.** Use the standard installer below with the selected agent flags; add `-g` for user scope. Once the choices are settled, execute without asking for the same approval again. If Node/npm is unavailable, use the host's supported skill-installation method or the standalone ZIP, or agree on the scope of any prerequisite installation.
+2. **Install in the chosen scope.** Resolve the selected host's identifier using [Choose your host](#choose-your-host), then use the standard installer below; add `-g` for user scope. Once the choices are settled, execute without asking for the same approval again. If Node/npm is unavailable, use the host's supported skill-installation method or the standalone ZIP, or agree on the scope of any prerequisite installation.
 3. **Verify the installed copy.** Confirm that its `SKILL.md` names `motif`, referenced scripts/assets are present, and the host can discover the skill. If Python 3.10+ is already available, run the installed `scripts/talk.py --help`. Report the installed path and any host reload still needed; file presence alone does not prove that the host has loaded it.
 4. **Separate rendering setup.** Preparing a rendering environment belongs to authorized animation production; follow [the environment guide](#environment-a-separate-scope-choice) and the installed skill then. A skill-installation request does not require a demo render or a new talk project.
 
 If local execution is unavailable, explain which steps the user needs to run and leave unperformed verification clearly identified. Keep the remaining work moving when a prerequisite affects only one step.
+
+### Choose your host
+
+Motif's portable entry point is [SKILL.md](skills/motif/SKILL.md); its Python/Manim helpers run through the host's local shell. [agents/openai.yaml](skills/motif/agents/openai.yaml) supplies optional Codex UI metadata. Other hosts use the same skill and resources through their own discovery and invocation mechanisms.
+
+Select the identifier for the host you are using, or the additional hosts the user selected:
+
+| Host | Installer `--agent` identifier |
+|---|---|
+| Codex | `codex` |
+| Claude Code | `claude-code` |
+| Gemini CLI | `gemini-cli` |
+| OpenCode | `opencode` |
+| Qwen Code | `qwen-code` |
+| GitHub Copilot | `github-copilot` |
+| Cursor | `cursor` |
+
+This is a selection from the installer's [supported agents](https://github.com/vercel-labs/skills#supported-agents); use that list for other hosts and current identifiers. If the installer does not list your host, consult the host's native Agent Skills installation instructions and use the standalone ZIP in its documented skill directory. If native loading is unavailable, the agent can read `SKILL.md` and its linked resources as context; report this as manual use rather than a verified native installation.
+
+Installer support identifies installation targets. Our recorded integration checks cover Codex/Claude Code installation and copied management commands; a complete Motif report workflow has not been tested in every host.
 
 ### Installer commands
 
@@ -57,18 +77,18 @@ With Node/npm available, run this in your workspace:
 npx skills add Misaka16384/motif --skill motif
 ```
 
-The standard [`skills` installer](https://github.com/vercel-labs/skills) supports multiple agents, including Codex, Claude Code and Cursor. Choose agents interactively or specify them explicitly. The examples below target Codex and Claude Code; use the flags for the hosts you selected. Add `-y` after resolving the installation choices to run without installer prompts.
+The standard [`skills` installer](https://github.com/vercel-labs/skills) lets you choose agents interactively or specify them explicitly. In the templates below, replace `AGENT_ID` with an identifier from the table or supported-agent list. Repeat `-a` for additional selected hosts. Add `-y` after resolving the installation choices to run without installer prompts.
 
 **Project installation** is the default:
 
-```bash
-npx skills add Misaka16384/motif --skill motif -a codex -a claude-code
+```text
+npx skills add Misaka16384/motif --skill motif -a AGENT_ID
 ```
 
 **User-level installation**, available across projects, adds `-g`:
 
-```bash
-npx skills add Misaka16384/motif --skill motif -a codex -a claude-code -g -y
+```text
+npx skills add Misaka16384/motif --skill motif -a AGENT_ID -g -y
 ```
 
 No account, MCP server or external generation service is required by this skill. Rendering needs an agent with local file/shell access. The host determines its skill directory and invocation method.

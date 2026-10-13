@@ -43,11 +43,31 @@ GIF 是小预览，MP4 保留原片段的分辨率和帧率。自带的另一个
 收到安装请求后，按以下清单操作，并沿用用户已经明确的选择：
 
 1. **确定安装位置。** 检查当前 AI 宿主、工作目录和已有 Motif 安装。只确认尚未明确的选择：安装给哪些宿主，以及项目级或用户级。项目级安装使用用户选定的工作目录。
-2. **在选定范围安装。** 使用下方标准安装器，指定选定宿主；用户级加入 `-g`。选择确定后直接执行，不重复询问同一批准。没有 Node/npm 时，可使用宿主支持的 skill 安装方式或独立 ZIP，或先确定前置工具的安装范围。
+2. **在选定范围安装。** 按[选择你的宿主](#选择你的宿主)确定选定宿主的参数，再使用下方标准安装器；用户级加入 `-g`。选择确定后直接执行，不重复询问同一批准。没有 Node/npm 时，可使用宿主支持的 skill 安装方式或独立 ZIP，或先确定前置工具的安装范围。
 3. **验证安装后的副本。** 确认 `SKILL.md` 中的名称为 `motif`、引用的脚本和资源齐全，且宿主能发现该 skill。已有 Python 3.10+ 时，运行安装副本的 `scripts/talk.py --help`。报告实际路径，以及是否还需要重载宿主；文件存在不等于宿主已经加载。
 4. **单独安排渲染环境。** 获得动画制作授权后，按[环境指引](#环境安装也有独立范围)和已安装的 skill 准备渲染环境。仅安装 skill 不要求渲染演示或新建报告项目。
 
 无法在本地执行时，说明用户需要运行哪些步骤，并明确标记尚未完成的验证。某个前置条件只影响一个步骤时，继续处理其他工作。
+
+### 选择你的宿主
+
+Motif 的通用入口是 [SKILL.md](skills/motif/SKILL.md)，Python／Manim 工具通过宿主的本地 shell 运行。[agents/openai.yaml](skills/motif/agents/openai.yaml) 提供可选的 Codex UI 信息，其他宿主按各自的发现和调用机制使用同一份 skill 与资源。
+
+选择当前使用的宿主参数，或用户明确选择的其他宿主：
+
+| 宿主 | 安装器 `--agent` 参数 |
+|---|---|
+| Codex | `codex` |
+| Claude Code | `claude-code` |
+| Gemini CLI | `gemini-cli` |
+| OpenCode | `opencode` |
+| Qwen Code | `qwen-code` |
+| GitHub Copilot | `github-copilot` |
+| Cursor | `cursor` |
+
+这只是安装器[支持列表](https://github.com/vercel-labs/skills#supported-agents)中的一部分；其他宿主及最新参数查该列表。安装器未列出当前宿主时，查看宿主原生 Agent Skills 安装指引，将独立 ZIP 安装到其文档规定的 skill 目录。无法原生加载时，agent 仍可将 `SKILL.md` 和链接资源作为上下文阅读，但应明确这是手动使用，不能声称原生安装已验证。
+
+安装器支持代表可选安装目标。我们实际验证了 Codex／Claude Code 的安装和安装后的管理命令，尚未在每个宿主中跑完整的报告制作流程。
 
 ### 安装命令
 
@@ -57,18 +77,18 @@ GIF 是小预览，MP4 保留原片段的分辨率和帧率。自带的另一个
 npx skills add Misaka16384/motif --skill motif
 ```
 
-通过标准 [`skills` 安装工具](https://github.com/vercel-labs/skills) 分发，支持 Codex、Claude Code、Cursor 等多个宿主。可以交互选择，也可以指定目标。下方示例选择 Codex 和 Claude Code，实际使用选定宿主对应的参数；安装选择确认后，可加 `-y` 跳过安装器提示。
+标准 [`skills` 安装工具](https://github.com/vercel-labs/skills) 可以交互选择宿主，也可以指定目标。下方模板中的 `AGENT_ID` 要替换为表格或支持列表中的宿主参数；多个选定宿主可重复使用 `-a`。安装选择确认后，可加 `-y` 跳过安装器提示。
 
 默认是**项目级安装**：
 
-```bash
-npx skills add Misaka16384/motif --skill motif -a codex -a claude-code
+```text
+npx skills add Misaka16384/motif --skill motif -a AGENT_ID
 ```
 
 加入 `-g` 后是**用户级全局安装**，多个项目都可使用：
 
-```bash
-npx skills add Misaka16384/motif --skill motif -a codex -a claude-code -g -y
+```text
+npx skills add Misaka16384/motif --skill motif -a AGENT_ID -g -y
 ```
 
 各宿主决定自己的 skill 目录和调用方式。无需账号、MCP 服务器或外部生成服务；制作动画需要模型能访问本地文件并执行命令。
