@@ -1,0 +1,11 @@
+__pycache__/
+*.py[cod]
+.venv/
+.runtime/
+.build/
+dist/
+examples/
+examples/*/.build/
+examples/*/deck/
+examples/*/reviews/
+examples/*/.research-talk/

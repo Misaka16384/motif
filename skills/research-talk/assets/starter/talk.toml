@@ -1,0 +1,39 @@
+schema = 1
+created_by = "research-talk"
+title = "__PROJECT_TITLE__"
+
+[environment]
+python = ""
+scope = "unconfigured"
+path = []
+
+[visual]
+pace = 0.7
+background = "#000000"
+foreground = "#FFFFFF"
+seed = 0
+
+[profiles.preview]
+width = 1280
+height = 720
+fps = 30
+
+[profiles.final]
+width = 2560
+height = 1440
+fps = 60
+
+[profiles.smoke]
+width = 640
+height = 360
+fps = 15
+
+[[scenes]]
+name = "Translation"
+file = "anim/scenes.py"
+depends = []
+
+[[scenes]]
+name = "Cancellation"
+file = "anim/scenes.py"
+depends = []
