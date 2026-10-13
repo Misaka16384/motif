@@ -22,7 +22,7 @@ Build a lightweight, distributable skill for researchers who know their work. Th
 
 ## Current state
 
-- Version: 0.1.0 implemented and verified locally.
+- Version: 0.1.0 released; implementation, documentation and demonstration media complete.
 - Implemented: core skill, references, generic starter, local project discovery/setup/build/check/export/preview, logic tests, release packaging.
 - Passed: package/skill validation, 16 logic tests (one Windows-only symlink skip), actual formula compilation and smoke render, final 2560×1440/60 fps render, frame-cadence checks, HTML/PPTX export, and cache reuse.
 - Independent review: completed; findings about early setup, environment replacement discovery, ZIP layout, scene selection and video timing/target validation were corrected and rechecked.
@@ -34,9 +34,10 @@ Build a lightweight, distributable skill for researchers who know their work. Th
 - Installer integration: `skills` 1.7.2 installed from the public repository into an isolated project; copied CLI, starter resources, project creation and discovery passed. Host execution was needed for this machine's Git credentials; no global skills/settings were changed.
 - Documentation: complete English/Chinese READMEs; independently reviewed against the implementation and corrected. User authorized three public-paper animation excerpts for demonstration.
 - Demonstrations: three inspected GIFs (2.15 MB total) and 1440p60 MP4s prepared. Local links and both release ZIPs verified; source talk remains untouched.
-- Pending: tagged release and uploaded MP4 excerpts.
+- Release: `https://github.com/Misaka16384/research-talk/releases/tag/v0.1.0`; standalone skill/plugin ZIPs and all three MP4 excerpts uploaded and verified against expected filenames/sizes.
+- Release CI: validation and publishing passed for commit `e16bf00`; release run `38363506680`, validation runs `38363502752` and `38363506762`.
 - No private scientific source material is included.
 
 ## Next step
 
-Publish tag `v0.1.0`, verify its release workflow/assets, upload the authorized MP4 excerpts, and update this state. Treat real player testing as a separate verification result; do not claim WPS/Office autoplay was observed from XML checks alone.
+The requested implementation and publication are complete. Continue from the next user-selected talk or requested toolkit revision. Actual browser/Office/WPS playback remains a separate verification task on a suitable presentation machine; do not claim WPS/Office autoplay was observed from XML checks alone.
