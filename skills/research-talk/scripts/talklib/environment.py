@@ -45,6 +45,9 @@ print(json.dumps({'python':sys.executable,'version':list(sys.version_info[:3]),'
 
 
 def inspect(root, config, selected_python=None, candidates=True):
+    source = ("explicit-candidate" if selected_python else
+              "project-config" if config.get("environment", {}).get("python") else
+              "management-python")
     try:
         report = _probe(root, config, selected_python)
     except TalkError as exc:
@@ -55,14 +58,29 @@ def inspect(root, config, selected_python=None, candidates=True):
                   "tools": tools, "missing_packages": list(PACKAGES), "untested_versions": {},
                   "missing_external": [name for name in ("latex", "dvisvgm") if not tools[name]],
                   "ready": False, "checked": now(), "error": str(exc)}
+    report["selection"] = {"source": source, "note": "Dependency results apply only to the Python shown above, not every environment on this machine. Probing does not bind or modify it."}
     if candidates:
         possibilities = [("project", root / ".venv" / ("Scripts/python.exe" if os.name == "nt" else "bin/python"))]
         preferences = settings()
         remembered = preferences.get("shared_python")
         if remembered:
             possibilities.append(("remembered-shared", Path(remembered)))
+        active = os.environ.get("VIRTUAL_ENV")
+        if active:
+            possibilities.append(("active-venv", Path(active) / ("Scripts/python.exe" if os.name == "nt" else "bin/python")))
+        conda = os.environ.get("CONDA_PREFIX")
+        if conda:
+            possibilities.append(("active-conda", Path(conda) / ("python.exe" if os.name == "nt" else "bin/python")))
+        manim = shutil.which("manim", path=run_environment(root, config)["PATH"])
+        if manim:
+            possibilities.append(("path-manim", Path(manim).parent / ("python.exe" if os.name == "nt" else "python")))
         report["reuse_candidates"] = []
+        seen = set()
         for kind, path in possibilities:
+            identity = os.path.normcase(os.path.abspath(os.path.expanduser(str(path))))
+            if identity in seen:
+                continue
+            seen.add(identity)
             if not path.is_file():
                 continue
             try:
@@ -75,6 +93,20 @@ def inspect(root, config, selected_python=None, candidates=True):
                                                   "packages": health["packages"], "missing_external": health["missing_external"]})
             except TalkError as exc:
                 report["reuse_candidates"].append({"kind": kind, "python": str(path), "error": str(exc)})
+    ready_candidates = [candidate for candidate in report.get("reuse_candidates", []) if candidate.get("ready")]
+    candidate = ({"python": report["python"], "path": config.get("environment", {}).get("path", [])}
+                 if report["ready"] else ready_candidates[0] if ready_candidates else
+                 {"python": "<rendering-python>", "path": []})
+    path_args = [argument for directory in candidate.get("path", []) for argument in ("--path", directory)]
+    report["reuse_guidance"] = {
+        "message": "Selected Python is ready; smoke-test before production." if report["ready"] else
+                   "Missing dependencies here do not mean your existing rendering environment is missing. Probe an existing Python or choose a scoped setup plan.",
+        "probe_example": ["doctor", "--project", str(root), "--python", candidate["python"], *path_args],
+        "reuse_plan_example": ["setup", "--project", str(root), "--reuse", candidate["python"], *path_args],
+        "external_tools": "Add --path <tex-bin> when LaTeX/dvisvgm are outside PATH; reuse keeps the selected Python's packages unchanged.",
+        "setup_scope": "For a new environment, choose setup --scope project or --scope shared. Setup only executes with --yes after that choice.",
+        "discovery_scope": "Candidates are bounded to the project venv, remembered shared environment, active venv/Conda and a PATH Manim launcher; no home/drive scan or automatic binding."
+    }
     return report
 
 

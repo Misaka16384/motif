@@ -23,7 +23,7 @@ Build a lightweight, distributable skill for researchers who know their work. Th
 
 ## Current state
 
-- Version: 0.1.1 released; native-autoplay correction verified and documented.
+- Version: 0.1.2 prepared; compact status and explicit environment-reuse guidance implemented and locally verified. Publishing is authorized and next. Latest published version is 0.1.1.
 - Implemented: core skill, references, generic starter, local project discovery/setup/build/check/export/preview, logic tests, release packaging.
 - Passed: package/skill validation, 26 logic tests (one Windows-only symlink skip), actual formula compilation and smoke render, final 2560×1440/60 fps render, frame-cadence checks, HTML/PPTX export, and cache reuse.
 - Independent review: completed; findings about early setup, environment replacement discovery, ZIP layout, scene selection and video timing/target validation were corrected and rechecked.
@@ -52,4 +52,6 @@ Build a lightweight, distributable skill for researchers who know their work. Th
 
 ## Next step
 
-The requested autoplay preservation and public README anonymization are complete. Continue with the next requested project/toolkit revision. Keep the reference deck intact. Distinguish the user's real-player evidence for the reference artifact from fresh exports' package checks.
+Publish the user-authorized v0.1.2 tag/release, verify cross-platform CI and both release assets, then record completion here. Local validation: `.runtime/verify-012/verification.json` and command logs; 30 tests passed (one Windows symlink skip), package validation and both ZIPs passed. Actual trial status reduced from 1,096 lines to 90, preserving current scene states, latest exports and `player_tested=false`; full records remain in `--verbose`. Management/configured/explicit Python labels, known-environment probing and non-executing reuse plan passed; manifests, registry and media records stayed unchanged. Platform audit found no macOS-specific blocker, but macOS runtime remains untested. Host CLI agents resolve platform prerequisites; independent work continues when a dependency is unavailable.
+
+Local trial report: `.runtime/user-trial-20261013/report.md`. Trial created three new scenes/ten beats at 720p30 and inspected 30 keyframes. Author replies/handoff were simulated by the same evaluator; browser/Office/WPS playback and fresh installation were not tested. Trial artifacts remain local and excluded from publication.

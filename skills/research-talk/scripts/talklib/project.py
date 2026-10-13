@@ -8,7 +8,7 @@ import re
 import shutil
 
 from .common import (SKILL_ROOT, TalkError, marked, load_project, settings,
-                     register, write_json, user_home, now)
+                     register, write_json, read_json, user_home, now)
 
 SKIP = {".git", ".venv", "venv", "node_modules", "__pycache__", ".build", "media", "deck", ".runtime"}
 
@@ -80,17 +80,46 @@ def initialize(path, title, register_project=True):
     return {"project": str(path), "state": str(state), "registered": register_project, "created": now()}
 
 
-def status(path):
+def status(path, verbose=False):
     root, config = load_project(path)
     builds = {}
     for profile in config["profiles"]:
-        from .common import read_json
         builds[profile] = read_json(root / ".build" / profile / "status.json", {"scenes": {}, "exports": []})
-    from .common import read_json
-    return {"project": str(root), "title": config.get("title"),
+    result = {"project": str(root), "title": config.get("title"),
             "environment": config.get("environment", {}), "scene_order": [s["name"] for s in config["scenes"]],
             "profiles": builds, "lock": read_json(root / ".build" / "operation.lock"),
             "handoff": str(root / "PROJECT.md")}
+    if verbose:
+        return result
+    content = (root / "PROJECT.md").read_text(encoding="utf-8")
+    for heading, key, limit in (("Current state", "current_state", 900), ("Next step", "next_step", 500)):
+        match = re.search(r'^## ' + heading + r'\s*\n(.*?)(?=^## |\Z)', content, re.MULTILINE | re.DOTALL)
+        result[key] = match.group(1).strip()[:limit] if match else "Read PROJECT.md"
+    compact = {}
+    for profile, record in builds.items():
+        scenes = record.get("scenes", {})
+        states = {name: scenes.get(name, {}).get("state", "pending") for name in result["scene_order"]}
+        exports = record.get("exports", [])
+        latest = exports[-1] if exports else None
+        summary = {"recorded_scene_states": states,
+                   "counts": {state: list(states.values()).count(state) for state in sorted(set(states.values()))},
+                   "beats": sum(scenes[name].get("beats", 0) for name, state in states.items() if state == "success"),
+                   "latest_export": {key: latest[key] for key in
+                                     ("directory", "created", "formats", "beats", "verified", "player_tested")
+                                     if key in latest} if latest else None,
+                   "record": str(root / ".build" / profile / "status.json")}
+        errors = {name: str(scenes[name]["error"])[:300] for name in states
+                  if name in scenes and scenes[name].get("error")}
+        if errors:
+            summary["errors"] = errors
+        attention = {name: {key: scenes[name][key] for key in ("state", "child_pid", "log") if key in scenes[name]}
+                     for name, state in states.items() if state in ("running", "interrupted", "failed")}
+        if attention:
+            summary["attention"] = attention
+        compact[profile] = summary
+    result["profiles"] = compact
+    result["detail_hint"] = "Use status --verbose for full media, timing and export history. Recorded states do not replace check's freshness validation."
+    return result
 
 
 def lint_sources(root, config):

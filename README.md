@@ -107,6 +107,8 @@ The agent actively maintains `PROJECT.md` after decisions, revisions, reviews an
 
 On entry, the skill discovers marked projects in bounded workspace/configured roots and its local registry. It offers continuation when no project has been selected. It does not scan entire drives or repeatedly ask an active project to restart. All runtime resources travel with the installed skill.
 
+The CLI's `status` command shows a compact handoff summary, progress and interruption details. Use `status --verbose` for complete media records and export history; use `check` for fresh validation.
+
 ## Environment: a separate scope choice
 
 Installing the skill and preparing the rendering environment are separate decisions.
@@ -119,7 +121,11 @@ Installing the skill and preparing the rendering environment are separate decisi
 
 First use detects available tools. When animation production is authorized, the agent offers reuse or scoped setup, completes missing prerequisites within the agreed scope, and runs a small integration test. Discussion can begin beforehand. Reuse does not change an environment's packages; shared setup uses a dedicated virtual environment rather than system Python.
 
+`doctor` labels the Python it checks and lists bounded reuse candidates, including active virtualenv/Conda environments. Missing dependencies in the management Python do not imply that your existing rendering environment is missing. Probe another interpreter with `doctor --python <path>`, then review the provided `setup --reuse` plan before binding it.
+
 The management CLI supports Python 3.10+. The tested rendering baseline uses Manim 0.19.1 and Manim Slides 5.7.0. Starter formulas require LaTeX/dvisvgm. PyAV handles rendering and inspection; a separate FFmpeg executable is optional. Native prerequisites depend on the platform. The agent uses official instructions and records its selected tools.
+
+Windows and Linux have package/logic CI coverage. macOS runtime compatibility has not been verified. The host CLI agent resolves local prerequisites within the agreed scope; the skill does not prescribe a universal system installer. Missing prerequisites only block work that depends on them.
 
 See [local operations](skills/research-talk/references/operations.md) for detection, installation scope, external prerequisites and exact commands.
 

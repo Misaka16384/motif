@@ -1,4 +1,5 @@
 import json
+from copy import deepcopy
 import os
 from pathlib import Path
 import sys
@@ -15,6 +16,7 @@ from talklib import build, environment, project
 from talklib.common import (TalkError, load_project, project_lock, save_project,
                             python_executable, settings, toml_text, tomllib, write_json)
 import media_helper
+import talk
 
 
 class ToolkitTests(unittest.TestCase):
@@ -80,6 +82,102 @@ class ToolkitTests(unittest.TestCase):
         self.assertFalse(result["ready"])
         self.assertTrue(result["error"])
         self.assertEqual(result["reuse_candidates"][0]["python"], sys.executable)
+
+    def test_status_is_compact_without_losing_handoff_or_interruption_evidence(self):
+        first, second = [scene["name"] for scene in self.config["scenes"]]
+        record = {"scenes": {
+            first: {"state": "success", "beats": 3, "media": [{"file": "clip.mp4"}] * 100,
+                    "file_stats": {"clip.mp4": {"size": 123}}},
+            second: {"state": "interrupted", "child_pid": 321, "log": "scene.log", "error": "stopped"},
+            "OldScene": {"state": "success", "beats": 99}},
+            "exports": [{"directory": "old", "formats": ["html"]},
+                        {"directory": "latest", "formats": ["pptx"], "beats": 3,
+                         "verified": "package-and-media", "player_tested": False}]}
+        path = self.root / ".build/preview/status.json"
+        write_json(path, record)
+        write_json(self.root / ".build/operation.lock", {"pid": 123})
+        before = path.read_bytes()
+        summary = project.status(self.root)
+        detail = project.status(self.root, verbose=True)
+        profile = summary["profiles"]["preview"]
+        self.assertEqual(profile["counts"], {"interrupted": 1, "success": 1})
+        self.assertEqual(profile["beats"], 3)
+        self.assertEqual(profile["recorded_scene_states"], {first: "success", second: "interrupted"})
+        self.assertEqual(profile["attention"][second], {"state": "interrupted", "child_pid": 321, "log": "scene.log"})
+        self.assertEqual(profile["errors"][second], "stopped")
+        self.assertEqual(profile["latest_export"]["directory"], "latest")
+        self.assertFalse(profile["latest_export"]["player_tested"])
+        self.assertEqual(summary["lock"], {"pid": 123})
+        self.assertTrue(summary["current_state"])
+        self.assertTrue(summary["next_step"])
+        self.assertIn("freshness", summary["detail_hint"])
+        self.assertEqual(detail["profiles"]["preview"], record)
+        self.assertLess(len(json.dumps(summary)), len(json.dumps(detail)))
+        self.assertEqual(path.read_bytes(), before)
+        empty = summary["profiles"]["final"]
+        self.assertEqual(empty["counts"], {"pending": 2})
+        self.assertIsNone(empty["latest_export"])
+
+    def test_status_cli_verbose_flag_preserves_detailed_records(self):
+        for verbose in (False, True):
+            arguments = ["status", "--project", str(self.root)] + (["--verbose"] if verbose else [])
+            with patch.object(project, "status", return_value={"ok": True}) as status_call:
+                result, code = talk.dispatch(talk.parser().parse_args(arguments))
+            status_call.assert_called_once_with(self.root, verbose=verbose)
+            self.assertEqual(code, 0)
+            self.assertEqual(result, {"ok": True})
+
+    def test_doctor_distinguishes_interpreter_selection_without_binding_it(self):
+        manifest = (self.root / "talk.toml").read_bytes()
+        for source, configured, selected in (("management-python", "", None),
+                                              ("project-config", "configured-python", None),
+                                              ("explicit-candidate", "configured-python", "candidate-python")):
+            self.config["environment"]["python"] = configured
+            before = deepcopy(self.config)
+            with patch.object(environment, "_probe", return_value={"python": selected or configured or sys.executable,
+                                                                    "ready": True}):
+                result = environment.inspect(self.root, self.config, selected, candidates=False)
+            self.assertEqual(result["selection"]["source"], source)
+            self.assertIn("not every environment", result["selection"]["note"])
+            self.assertIn("smoke-test", result["reuse_guidance"]["message"])
+            self.assertEqual(result["reuse_guidance"]["probe_example"][4], result["python"])
+            self.assertEqual(self.config, before)
+        self.assertEqual((self.root / "talk.toml").read_bytes(), manifest)
+
+    def test_doctor_bounded_candidates_deduplicate_and_keep_required_tool_paths(self):
+        venv_suffix = "Scripts/python.exe" if os.name == "nt" else "bin/python"
+        project_python = self.root / ".venv" / venv_suffix
+        shared_python = self.base / "shared" / venv_suffix
+        conda_python = self.base / "conda" / ("python.exe" if os.name == "nt" else "bin/python")
+        for candidate in (project_python, shared_python, conda_python):
+            candidate.parent.mkdir(parents=True, exist_ok=True)
+            candidate.touch()
+        preferences = settings()
+        preferences.update(shared_python=str(shared_python), shared_path=["shared-tex-bin"])
+        write_json(self.base / "preferences/settings.json", preferences)
+        self.config["environment"]["path"] = ["project-tool-bin"]
+        config_before = deepcopy(self.config)
+        settings_before = (self.base / "preferences/settings.json").read_bytes()
+        def probe(root, config, selected=None):
+            return {"python": selected or sys.executable, "ready": selected == str(shared_python),
+                    "packages": {}, "missing_external": []}
+        with patch.dict(os.environ, {"VIRTUAL_ENV": str(self.root / ".venv"),
+                                     "CONDA_PREFIX": str(self.base / "conda")}), \
+                patch.object(environment, "_probe", side_effect=probe), \
+                patch.object(environment.shutil, "which", return_value=str(shared_python.parent / "manim")):
+            result = environment.inspect(self.root, self.config)
+        candidates = result["reuse_candidates"]
+        self.assertEqual([candidate["kind"] for candidate in candidates], ["project", "remembered-shared", "active-conda"])
+        self.assertFalse(result["ready"])
+        self.assertTrue(candidates[1]["ready"])
+        required_paths = ["--path", "shared-tex-bin", "--path", "project-tool-bin"]
+        self.assertEqual(result["reuse_guidance"]["probe_example"],
+                         ["doctor", "--project", str(self.root), "--python", str(shared_python), *required_paths])
+        self.assertEqual(result["reuse_guidance"]["reuse_plan_example"],
+                         ["setup", "--project", str(self.root), "--reuse", str(shared_python), *required_paths])
+        self.assertIn("do not mean", result["reuse_guidance"]["message"])
+        self.assertEqual(self.config, config_before)
+        self.assertEqual((self.base / "preferences/settings.json").read_bytes(), settings_before)
 
     def test_concurrent_project_operations_are_refused(self):
         with project_lock(self.root):

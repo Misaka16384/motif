@@ -10,10 +10,13 @@ Commands return JSON; nonzero exit codes mean failure or incomplete detection. D
 python <skill>/scripts/talk.py discover --root <workspace>
 python <skill>/scripts/talk.py init <new-directory> --name "Talk title"
 python <skill>/scripts/talk.py status --project <project>
+python <skill>/scripts/talk.py status --project <project> --verbose
 python <skill>/scripts/talk.py roots --add <existing-search-root>
 ```
 
 Discovery checks registered projects and bounded roots, skips caches/venvs and does not follow directory symlinks. `init` refuses nonempty directories. The local registry is `settings.json` in the user's configuration directory; `RESEARCH_TALK_HOME` can select another location for tests or a portable setup. Project contents, source material and scientific claims are never placed in that registry.
+
+`status` defaults to a handoff summary: current state/next step, recorded scene states and counts for each profile, latest export, and failure/interruption details including logs and child PIDs. It counts only scenes in the current manifest. `--verbose` retains complete records, including earlier scenes, per-video metadata and export history. These are saved records; use `check` to validate freshness and media before delivery.
 
 ## Environment
 
@@ -23,12 +26,19 @@ python <skill>/scripts/talk.py doctor --project <project> --python <candidate-py
 python <skill>/scripts/talk.py setup --project <project> --scope project
 python <skill>/scripts/talk.py setup --project <project> --scope project --yes
 python <skill>/scripts/talk.py setup --project <project> --scope shared --yes
+python <skill>/scripts/talk.py setup --project <project> --reuse <existing-python> --path <tex-bin>
 python <skill>/scripts/talk.py setup --project <project> --reuse <existing-python> --path <tex-bin> --yes
 ```
+
+`doctor` identifies which Python it checked: explicit `--python`, the project's configured interpreter, or the Python running the management CLI. Missing packages apply to that interpreter, not the whole machine. Reuse candidates are bounded to the project's `.venv`, a remembered shared environment, an active virtualenv/Conda environment, and a Python beside a PATH Manim launcher. An inactive environment elsewhere can be probed with `--python`; there is no drive scan or automatic binding. Read `ready` for the selected interpreter and the separate candidate results. A ready candidate does not make the selected interpreter ready or change the command's exit code.
+
+Follow `reuse_guidance` to probe a candidate and review a `setup --reuse` plan; command examples include any required remembered tool paths. `doctor` and setup without `--yes` do not change the project binding or install packages. After selecting reuse, execute the plan with `--yes`; smoke-test the chosen environment before production.
 
 Without `--yes`, setup reports a plan and makes no environment changes. After the user chooses the scope, the agent executes the necessary scoped installation without repeated prompts. Project scope uses `<project>/.venv`; shared scope uses `<user-config>/environments/render-v0.1`. Shared means a dedicated user-level environment, not installing into system Python. Reuse binds a chosen interpreter without changing its packages. Detected versions outside the tested stack are reported rather than rejected; inspect APIs and smoke-test them before relying on them.
 
 Python packages are installed from the packaged requirements, using PyPI for this command only; global pip settings are untouched. Requirements are a tested starting point and can be revised deliberately. External tools are detected, not silently installed system-wide. **The agent completes missing external prerequisites**, using official installation instructions, the chosen scope and the tools available on the host. Explain any proposed system-level change separately when a project-only choice cannot cover it; do not silently change scope.
+
+Resolve platform prerequisites with the user's host CLI and its available tools rather than waiting for a new shared installer. If a dependency remains unavailable, name the affected step and continue independent reading, planning or review work.
 
 Manim 0.19+ renders video with PyAV, which the toolkit also uses to inspect videos and decode final frames. A separate FFmpeg executable is useful but not required by this toolkit. The supplied `Tex`/`MathTex` examples require LaTeX and dvisvgm. Prefer reusing an existing TeX distribution. For a scoped installation, consider TinyTeX/TeX Live in an approved location, ensure Manim's necessary packages are available, and record the binary directory in `environment.path`. Linux Cairo/Pango build prerequisites may require OS packages; discover the actual failure and follow the approved scope rather than running a universal install recipe.
 

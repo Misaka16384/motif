@@ -27,6 +27,8 @@ def parser():
     for name in ("status", "doctor", "setup", "render", "check", "preview", "export", "smoke", "unlock"):
         command = commands.add_parser(name)
         command.add_argument("--project", default=".")
+        if name == "status":
+            command.add_argument("--verbose", action="store_true", help="Include full media records and export history")
         if name in ("render", "check", "preview", "export"):
             command.add_argument("--profile", default="preview")
         if name in ("render", "check", "preview"):
@@ -75,7 +77,7 @@ def dispatch(args):
         return data, 0
     root, config = load_project(args.project)
     if args.command == "status":
-        return project.status(root), 0
+        return project.status(root, verbose=args.verbose), 0
     if args.command == "doctor":
         config.setdefault("environment", {}).setdefault("path", []).extend(args.path)
         report = environment.inspect(root, config, args.python)

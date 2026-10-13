@@ -107,6 +107,8 @@ my-talk/
 
 进入 skill 后主动探测当前工作区、配置搜索根和本地注册表中的项目。未选择项目时询问接续或新建；已明确继续时直接接手。搜索有边界，不扫描整块硬盘，运行资源随 skill 一起安装。
 
+`status` 默认显示精简交接摘要、进度和中断信息。完整媒体记录与导出历史使用 `status --verbose`；实时验证使用 `check`。
+
 ## 环境安装也有独立范围
 
 安装 skill 与准备渲染环境是两个选择。
@@ -119,7 +121,11 @@ my-talk/
 
 首次使用主动检测依赖。获得制作授权后，询问尚未确定的范围，完成所需安装和小型测试；纯讨论可先进行。复用不会修改环境中的包，共享安装使用独立虚拟环境。安装 skill 不会自动改变系统 Python 或全局 pip 配置。
 
+`doctor` 明确标注正在检查的 Python，并列出有限范围内的复用候选，包括当前激活的 virtualenv／Conda 环境。管理 Python 缺依赖不代表现有渲染环境缺失。其他解释器可用 `doctor --python <路径>` 探测，再审阅输出中的 `setup --reuse` 计划，确定后绑定。
+
 管理命令支持 Python 3.10+。测试基线是 Manim 0.19.1、Manim Slides 5.7.0。示例公式需要 LaTeX/dvisvgm；PyAV 处理视频，独立 FFmpeg 可选。平台依赖由模型按官方指引和已同意的范围处理。完整命令见 [本地操作](skills/research-talk/references/operations.md)。
+
+Windows 和 Linux 已有包结构／逻辑测试的 CI 覆盖，macOS 运行兼容性尚未实测。本机依赖交给用户的 CLI agent 在同意的范围内解决，skill 不预设通用系统安装器；缺失依赖只阻塞依赖它的工作。
 
 ## 渲染与审阅
 
