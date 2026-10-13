@@ -39,7 +39,7 @@ def validate():
                 issues.append(f"Control characters: {file.relative_to(ROOT)}")
         except (SyntaxError, UnicodeError) as exc:
             issues.append(f"Invalid Python {file.relative_to(ROOT)}: {exc}")
-    for name in ("scripts/talk.py", "scripts/media_helper.py", "scripts/requirements.txt", "assets/starter/talk.toml", "assets/starter/PROJECT.md", "scripts/talklib/vendor/tomli/LICENSE"):
+    for name in ("scripts/talk.py", "scripts/media_helper.py", "scripts/requirements.txt", "assets/starter/talk.toml", "assets/starter/PROJECT.md", "assets/pptx/autoplay-timing.xml", "scripts/talklib/vendor/tomli/LICENSE"):
         if not (SKILL / name).is_file():
             issues.append(f"Missing resource: {name}")
     tag = __import__("os").environ.get("GITHUB_REF_NAME", "")

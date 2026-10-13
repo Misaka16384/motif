@@ -140,11 +140,13 @@ Independent review is useful after a full draft and is included when requested a
 | Format | Delivery and behavior |
 |---|---|
 | HTML | Offline interactive deck with a sibling assets directory; one-file export is available. |
-| PPTX | Embedded H.264/yuv420p clips, one slide per beat, with automatic-start timing. Formulas and diagrams remain video content. |
+| PPTX | Embedded H.264/yuv420p clips, one slide per beat, with a native media-play effect triggered on slide entry. Formulas and diagrams remain video content. |
 
 Exports enter a new versioned directory after the selected formats pass validation. Earlier releases stay usable.
 
 **Office/WPS autoplay requires a real-player check.** Verify slide-entry playback in both Microsoft PowerPoint and WPS Presentation where available, without clicking Play. Record versions and observations. ZIP/XML timing and codec checks alone do not prove compatibility. An unavailable player remains explicitly unverified.
+
+The exporter preserves the timing mechanism from a presentation reported working in both players. A raw converter's zero-delay video flag was not sufficient in the observed WPS failure. See [the autoplay case and regression checks](skills/research-talk/references/pptx-autoplay.md). Fresh exports retain their own verification status.
 
 ## Verification and development
 

@@ -23,9 +23,9 @@ Build a lightweight, distributable skill for researchers who know their work. Th
 
 ## Current state
 
-- Version: 0.1.0 released; implementation, documentation and demonstration media complete.
+- Version: 0.1.0 released; native-autoplay correction 0.1.1 implemented and under verification.
 - Implemented: core skill, references, generic starter, local project discovery/setup/build/check/export/preview, logic tests, release packaging.
-- Passed: package/skill validation, 16 logic tests (one Windows-only symlink skip), actual formula compilation and smoke render, final 2560×1440/60 fps render, frame-cadence checks, HTML/PPTX export, and cache reuse.
+- Passed: package/skill validation, 26 logic tests (one Windows-only symlink skip), actual formula compilation and smoke render, final 2560×1440/60 fps render, frame-cadence checks, HTML/PPTX export, and cache reuse.
 - Independent review: completed; findings about early setup, environment replacement discovery, ZIP layout, scene selection and video timing/target validation were corrected and rechecked.
 - Generic example: `examples/demo/`; final export pointer: `examples/demo/deck/latest-final.json`. Generated files are excluded from Git/distribution.
 - Player verification: package, H.264/yuv420p and automatic-start timing checks passed; actual browser/Office/WPS playback has not been tested. WPS executable was not found on this host during detection.
@@ -39,6 +39,16 @@ Build a lightweight, distributable skill for researchers who know their work. Th
 - Release CI: validation and publishing passed for commit `e16bf00`; release run `38363506680`, validation runs `38363502752` and `38363506762`.
 - No private scientific source material is included.
 
+## Autoplay follow-up
+
+- User confirms the corrected reference presentation plays automatically in Office and WPS; no application versions were supplied. This is reference-specific human evidence, not a fresh export test.
+- Static comparison found identical embedded videos; the corrected export adds a native media-play command triggered with the slide. Zero-delay-only media timing was insufficient.
+- Shared export now normalizes the native command/main-sequence timing and validates its activation path. A separate click-to-pause branch is retained. The normalizer preserves other XML/media and rejects unrelated animations.
+- Passed: raw/click-trigger exports rejected, corrected reference and normalized copy accepted across 104 slides. All 104 timing trees match the corrected reference; all 104 videos, 118 relationships and other package members remain unchanged. Original input hashes preserved.
+- Passed: actual cached-media HTML/PPTX export, no render-cache changes, new exports still marked `player_tested=false`. Evidence: local `.runtime/autoplay/` reports (excluded from publication).
+- Review found and corrected three validation/guard gaps; corresponding regression cases and the independent focused recheck pass. Pending: release 0.1.1.
+- Public README anonymity is enforced for this project; the previous plugin ZIP was replaced with anonymized documentation.
+
 ## Next step
 
-The requested implementation and publication are complete. Continue from the next user-selected talk or requested toolkit revision. Actual browser/Office/WPS playback remains a separate verification task on a suitable presentation machine; do not claim WPS/Office autoplay was observed from XML checks alone.
+Publish correction 0.1.1 and verify the release workflow/assets. Keep the reference deck intact. Distinguish the user's real-player evidence for the reference artifact from fresh exports' package checks.

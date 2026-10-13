@@ -5,7 +5,6 @@ import hashlib
 from html.parser import HTMLParser
 import json
 import os
-import posixpath
 from pathlib import Path
 import shutil
 import sys
@@ -19,6 +18,7 @@ from .common import (SKILL_ROOT, TalkError, execution_note, now, project_lock,
                      python_executable, read_json, run_environment, run_logged,
                      within, write_json)
 from .project import lint_sources
+from .pptx_autoplay import normalize_pptx, validate_slide
 
 
 def free_memory_mb():
@@ -263,60 +263,13 @@ def validate_pptx(path, expected_beats=None):
                 ET.fromstring(archive.read(name))
         if not slides or not videos or (expected_beats is not None and len(slides) != expected_beats):
             raise TalkError(f"PPTX slide/video count mismatch: {len(slides)} slides, {len(videos)} videos; expected {expected_beats} beats")
-        ns = "{http://schemas.openxmlformats.org/presentationml/2006/main}"
         autoplay = 0
         for name in slides:
             document = ET.fromstring(archive.read(name))
-            timed = document.findall(".//" + ns + "video")
-            parents = {child: parent for parent in document.iter() for child in parent}
-            relation_name = "ppt/slides/_rels/" + Path(name).name + ".rels"
-            relationships = {}
-            if relation_name in names:
-                for relationship in ET.fromstring(archive.read(relation_name)):
-                    target = posixpath.normpath(posixpath.join("ppt/slides", relationship.get("Target", "")))
-                    if relationship.get("TargetMode") != "External" and target in videos:
-                        relationships[relationship.get("Id")] = target
-            video_shape_ids = set()
-            drawing_ns = "{http://schemas.openxmlformats.org/drawingml/2006/main}"
-            relation_ns = "{http://schemas.openxmlformats.org/officeDocument/2006/relationships}"
-            media_ns = "{http://schemas.microsoft.com/office/powerpoint/2010/main}"
-            for picture in document.findall(".//" + ns + "pic"):
-                identity = picture.find(ns + "nvPicPr/" + ns + "cNvPr")
-                video_file = picture.find(".//" + drawing_ns + "videoFile")
-                embedded = picture.find(".//" + media_ns + "media")
-                if identity is None or video_file is None:
-                    continue
-                destination = relationships.get(video_file.get(relation_ns + "link"))
-                if destination and (embedded is None or relationships.get(embedded.get(relation_ns + "embed")) == destination):
-                    video_shape_ids.add(identity.get("id"))
-            def immediate(conditions):
-                return any(condition.get("delay") == "0" and not condition.get("evt")
-                           and not list(condition) for condition in conditions)
-            valid = bool(timed)
-            for video in timed:
-                media_node = video.find(ns + "cMediaNode")
-                condition_path = ns + "cTn/" + ns + "stCondLst/" + ns + "cond"
-                if media_node is None or not immediate(media_node.findall(condition_path)):
-                    valid = False
-                    break
-                target = media_node.find(ns + "tgtEl/" + ns + "spTgt")
-                if target is None or target.get("spid") not in video_shape_ids:
-                    valid = False
-                    break
-                ancestor = parents.get(video)
-                while ancestor is not None:
-                    if ancestor.tag == ns + "seq":
-                        valid = False  # Unknown sequential trigger path needs explicit review.
-                    if ancestor.tag == ns + "cTn":
-                        conditions = ancestor.findall(ns + "stCondLst/" + ns + "cond")
-                        if conditions and not immediate(conditions):
-                            valid = False
-                    ancestor = parents.get(ancestor)
-            if not valid:
-                raise TalkError(f"Slide video is not set to start automatically: {name}")
+            validate_slide(archive, name, document)
             autoplay += 1
         return {"slides": len(slides), "embedded_videos": len(videos), "timed_video_slides": autoplay,
-                "player_tested": False, "editable_formulas": False}
+                "autoplay_method": "native-slide-entry-media-command", "player_tested": False, "editable_formulas": False}
 
 
 def export(root, config, profile="preview", formats=("html",), one_file=False):
@@ -355,7 +308,11 @@ def export(root, config, profile="preview", formats=("html",), one_file=False):
                 run_logged(argv, folder, run_environment(root, config), staging / (format_name + ".log"))
                 if not target.is_file() or target.stat().st_size == 0:
                     raise TalkError(f"Converter returned without a usable output: {target}")
-                outputs[format_name] = validate_html(target) if format_name == "html" else validate_pptx(target, beats)
+                if format_name == "html":
+                    outputs[format_name] = validate_html(target)
+                else:
+                    normalization = normalize_pptx(target)
+                    outputs[format_name] = dict(validate_pptx(target, beats), **normalization)
             write_json(staging / "validation.json", {"profile": profile, "scenes": scenes, "beats": beats, "outputs": outputs})
             # Commit a new release directory only after every requested output passes.
             # Old releases remain intact, including the paths of their assets.

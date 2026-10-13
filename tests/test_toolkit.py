@@ -153,6 +153,9 @@ class ToolkitTests(unittest.TestCase):
         with self.assertRaises(TalkError):
             build.validate_pptx(target, 1)
         archive("")
+        with self.assertRaises(TalkError):
+            build.validate_pptx(target, 1)
+        build.normalize_pptx(target)
         self.assertEqual(build.validate_pptx(target, 1)["timed_video_slides"], 1)
         archive("", video=False)
         with self.assertRaises(TalkError):
