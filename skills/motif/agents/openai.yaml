@@ -1,0 +1,4 @@
+interface:
+  display_name: "Motif"
+  short_description: "3Blue1Brown-inspired research presentations"
+  default_prompt: "Use $motif to find or continue my local talk project, align on its central question, and create clear academic animations."

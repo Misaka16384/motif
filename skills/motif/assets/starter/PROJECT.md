@@ -1,5 +1,5 @@
 ---
-created_by: research-talk
+created_by: motif
 schema: 1
 title: "__PROJECT_TITLE__"
 ---

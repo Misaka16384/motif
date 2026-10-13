@@ -16,7 +16,8 @@ except ImportError:
     from .vendor import tomli as tomllib
 
 SKILL_ROOT = Path(__file__).resolve().parents[2]
-PROJECT_MARKER = "created_by: research-talk"
+PROJECT_MARKER = "created_by: motif"
+LEGACY_PROJECT_MARKER = "created_by: research-talk"
 
 
 class TalkError(Exception):
@@ -28,12 +29,18 @@ def now():
 
 
 def user_home():
-    override = os.environ.get("RESEARCH_TALK_HOME")
+    override = os.environ.get("MOTIF_HOME") or os.environ.get("RESEARCH_TALK_HOME")
     if override:
         return Path(override).expanduser().resolve()
     if os.name == "nt":
-        return Path(os.environ.get("LOCALAPPDATA", str(Path.home() / "AppData/Local"))) / "research-talk"
-    return Path(os.environ.get("XDG_CONFIG_HOME", str(Path.home() / ".config"))) / "research-talk"
+        base = Path(os.environ.get("LOCALAPPDATA", str(Path.home() / "AppData/Local")))
+    else:
+        base = Path(os.environ.get("XDG_CONFIG_HOME", str(Path.home() / ".config")))
+    current, legacy = base / "motif", base / "research-talk"
+    # Continue using an existing registry in place; never move its environments.
+    if not (current / "settings.json").is_file() and (legacy / "settings.json").is_file():
+        return legacy
+    return current
 
 
 def read_json(path, default=None):
@@ -88,7 +95,8 @@ def marked(root):
         return False
     try:
         header = path.read_text(encoding="utf-8").split("---", 2)
-        return len(header) == 3 and header[0].strip() == "" and PROJECT_MARKER in header[1].splitlines()
+        return (len(header) == 3 and header[0].strip() == "" and
+                any(marker in header[1].splitlines() for marker in (PROJECT_MARKER, LEGACY_PROJECT_MARKER)))
     except (OSError, UnicodeError):
         return False
 
@@ -96,12 +104,12 @@ def marked(root):
 def load_project(root):
     root = Path(root).expanduser().resolve()
     if not marked(root):
-        raise TalkError(f"Not a research-talk project: {root}. Read PROJECT.md or use init for a new directory.")
+        raise TalkError(f"Not a motif project: {root}. Read PROJECT.md or use init for a new directory.")
     try:
         data = tomllib.loads((root / "talk.toml").read_text(encoding="utf-8"))
     except (OSError, ValueError) as exc:
         raise TalkError(f"Invalid talk.toml: {exc}") from exc
-    if data.get("schema") != 1 or data.get("created_by") != "research-talk":
+    if data.get("schema") != 1 or data.get("created_by") not in ("motif", "research-talk"):
         raise TalkError("Unsupported or unmarked project configuration.")
     names = set()
     scenes = data.get("scenes", [])
@@ -183,7 +191,8 @@ def run_environment(root, data):
     env["PYTHONPATH"] = os.pathsep.join([str(root / "anim"), env.get("PYTHONPATH", "")])
     visual = data.get("visual", {})
     for key, fallback in (("pace", 0.7), ("background", "#000000"), ("foreground", "#FFFFFF"), ("seed", 0)):
-        env["RESEARCH_TALK_" + key.upper()] = str(visual.get(key, fallback))
+        env["MOTIF_" + key.upper()] = str(visual.get(key, fallback))
+        env["RESEARCH_TALK_" + key.upper()] = env["MOTIF_" + key.upper()]
     return env
 
 
@@ -244,12 +253,15 @@ def project_lock(root):
 
 def execution_note(root, message):
     path = root / "PROJECT.md"
-    begin, end = "<!-- research-talk:execution -->", "<!-- /research-talk:execution -->"
+    begin, end = "<!-- motif:execution -->", "<!-- /motif:execution -->"
     text = path.read_text(encoding="utf-8")
     block = f"{begin}\n## Latest execution (tool maintained)\n\nUpdated: {now()}\n\n{message}\n{end}"
-    if begin in text and end in text:
-        start, finish = text.index(begin), text.index(end) + len(end)
-        text = text[:start] + block + text[finish:]
+    pairs = ((begin, end), ("<!-- research-talk:execution -->", "<!-- /research-talk:execution -->"))
+    for previous_begin, previous_end in pairs:
+        if previous_begin in text and previous_end in text:
+            start, finish = text.index(previous_begin), text.index(previous_end) + len(previous_end)
+            text = text[:start] + block + text[finish:]
+            break
     else:
         text = text.rstrip() + "\n\n" + block + "\n"
     atomic_text(path, text)

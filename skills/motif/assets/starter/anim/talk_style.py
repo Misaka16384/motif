@@ -13,14 +13,14 @@ VIOLATION = "#FC6255"
 ALLOWED = "#83C167"
 HIGHLIGHT = "#FFFF00"
 NOTE = GREY_B
-PACE = float(os.environ.get("RESEARCH_TALK_PACE", "0.7"))
-config.background_color = os.environ.get("RESEARCH_TALK_BACKGROUND", "#000000")
-FOREGROUND = os.environ.get("RESEARCH_TALK_FOREGROUND", "#FFFFFF")
+PACE = float(os.environ.get("MOTIF_PACE", "0.7"))
+config.background_color = os.environ.get("MOTIF_BACKGROUND", "#000000")
+FOREGROUND = os.environ.get("MOTIF_FOREGROUND", "#FFFFFF")
 
 
 class TalkSlide(Slide):
     def __init__(self, *args, **kwargs):
-        kwargs.setdefault("random_seed", int(os.environ.get("RESEARCH_TALK_SEED", "0")))
+        kwargs.setdefault("random_seed", int(os.environ.get("MOTIF_SEED", "0")))
         super().__init__(*args, **kwargs)
 
     def play(self, *animations, **kwargs):
@@ -50,7 +50,7 @@ class TalkSlide(Slide):
         return super().tear_down()
 
     def _layout_snapshot(self):
-        if os.environ.get("RESEARCH_TALK_QA_FILE"):
+        if os.environ.get("MOTIF_QA_FILE"):
             from layout_probe import snapshot
             snapshot(self)
 

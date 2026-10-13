@@ -8,4 +8,4 @@ examples/
 examples/*/.build/
 examples/*/deck/
 examples/*/reviews/
-examples/*/.research-talk/
+examples/*/.motif/

@@ -14,7 +14,9 @@ python <skill>/scripts/talk.py status --project <project> --verbose
 python <skill>/scripts/talk.py roots --add <existing-search-root>
 ```
 
-Discovery checks registered projects and bounded roots, skips caches/venvs and does not follow directory symlinks. `init` refuses nonempty directories. The local registry is `settings.json` in the user's configuration directory; `RESEARCH_TALK_HOME` can select another location for tests or a portable setup. Project contents, source material and scientific claims are never placed in that registry.
+Discovery checks registered projects and bounded roots, skips caches/venvs and does not follow directory symlinks. `init` refuses nonempty directories. The local registry is `settings.json` in the user's configuration directory; `MOTIF_HOME` can select another location for tests or a portable setup. Project contents, source material and scientific claims are never placed in that registry.
+
+Renamed from `research-talk`: new projects use `motif` markers; discovery/loading also accepts existing `research-talk` markers. `MOTIF_HOME` takes precedence over the legacy `RESEARCH_TALK_HOME` override. Without an override, an existing `research-talk/settings.json` is reused in place when `motif/settings.json` is absent; no directory is moved. Rendering supplies legacy visual/QA variables for previously copied scenes, and execution notes replace an old marked block rather than duplicating it. These are compatibility reads/aliases, not a second public skill name.
 
 `status` defaults to a handoff summary: current state/next step, recorded scene states and counts for each profile, latest export, and failure/interruption details including logs and child PIDs. It counts only scenes in the current manifest. `--verbose` retains complete records, including earlier scenes, per-video metadata and export history. These are saved records; use `check` to validate freshness and media before delivery.
 

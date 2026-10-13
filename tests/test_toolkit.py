@@ -11,8 +11,8 @@ from unittest.mock import patch
 import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT / "skills/research-talk/scripts"))
-from talklib import build, environment, project
+sys.path.insert(0, str(ROOT / "skills/motif/scripts"))
+from talklib import build, common, environment, project
 from talklib.common import (TalkError, load_project, project_lock, save_project,
                             python_executable, settings, toml_text, tomllib, write_json)
 import media_helper
@@ -23,7 +23,7 @@ class ToolkitTests(unittest.TestCase):
     def setUp(self):
         self.temporary = tempfile.TemporaryDirectory()
         self.base = Path(self.temporary.name)
-        self.env = patch.dict(os.environ, {"RESEARCH_TALK_HOME": str(self.base / "preferences")})
+        self.env = patch.dict(os.environ, {"MOTIF_HOME": str(self.base / "preferences")})
         self.env.start()
         self.root = self.base / "A talk with spaces"
         project.initialize(self.root, 'A "quoted" title / 学术报告')
@@ -40,6 +40,75 @@ class ToolkitTests(unittest.TestCase):
         with self.assertRaises(TalkError):
             project.initialize(self.root, "overwrite")
         self.assertEqual((self.root / "PROJECT.md").read_bytes(), original)
+
+    def test_new_motif_projects_and_legacy_projects_are_both_readable(self):
+        self.assertEqual(self.config["created_by"], "motif")
+        state = self.root / "PROJECT.md"
+        self.assertIn("created_by: motif", state.read_text(encoding="utf-8"))
+        state.write_text(state.read_text(encoding="utf-8").replace("created_by: motif", "created_by: research-talk", 1), encoding="utf-8")
+        self.config["created_by"] = "research-talk"
+        save_project(self.root, self.config)
+        before = (state.read_bytes(), (self.root / "talk.toml").read_bytes())
+        loaded_root, loaded = load_project(self.root)
+        self.assertEqual(loaded_root, self.root)
+        self.assertEqual(loaded["created_by"], "research-talk")
+        self.assertEqual([item["path"] for item in project.discover([self.base])["projects"]], [str(self.root)])
+        self.assertEqual((state.read_bytes(), (self.root / "talk.toml").read_bytes()), before)
+
+    def test_motif_home_override_takes_precedence_and_legacy_override_still_works(self):
+        current, legacy = self.base / "motif-config", self.base / "old-config"
+        with patch.dict(os.environ, {"MOTIF_HOME": str(current), "RESEARCH_TALK_HOME": str(legacy)}):
+            self.assertEqual(common.user_home(), current.resolve())
+        with patch.dict(os.environ, {"MOTIF_HOME": "", "RESEARCH_TALK_HOME": str(legacy)}):
+            self.assertEqual(common.user_home(), legacy.resolve())
+        self.assertFalse(current.exists())
+        self.assertFalse(legacy.exists())
+
+    def test_existing_default_registry_is_reused_without_moving_settings(self):
+        base = self.base / "user-config"
+        current, legacy = base / "motif", base / "research-talk"
+        preferences = {"schema": 1, "projects": [str(self.root)], "roots": [], "shared_python": "old-python"}
+        write_json(legacy / "settings.json", preferences)
+        before = (legacy / "settings.json").read_bytes()
+        with patch.dict(os.environ, {"MOTIF_HOME": "", "RESEARCH_TALK_HOME": "",
+                                     "LOCALAPPDATA": str(base), "XDG_CONFIG_HOME": str(base)}):
+            self.assertEqual(common.user_home(), legacy)
+            self.assertEqual(settings(), preferences)
+            self.assertFalse(current.exists())
+            write_json(current / "settings.json", {"schema": 1, "projects": [], "roots": []})
+            self.assertEqual(common.user_home(), current)
+            self.assertEqual(settings()["projects"], [])
+        self.assertEqual((legacy / "settings.json").read_bytes(), before)
+
+    def test_legacy_copied_scenes_receive_visual_and_layout_environment(self):
+        self.config["visual"].update(pace=0.4, seed=17, background="#123456", foreground="#FFFFFF")
+        env = common.run_environment(self.root, self.config)
+        for key, value in self.config["visual"].items():
+            if key in ("pace", "seed", "background", "foreground"):
+                self.assertEqual(env["MOTIF_" + key.upper()], str(value))
+                self.assertEqual(env["RESEARCH_TALK_" + key.upper()], str(value))
+        with patch.object(environment, "inspect", return_value={"ready": True}), \
+                patch.object(build, "run_logged", side_effect=TalkError("test backend stop")) as backend:
+            with self.assertRaises(TalkError):
+                build.render(self.root, self.config, "preview", ["Translation"])
+        render_env = backend.call_args.args[2]
+        self.assertTrue(render_env["MOTIF_QA_FILE"].endswith("Translation.json"))
+        self.assertEqual(render_env["MOTIF_QA_FILE"], render_env["RESEARCH_TALK_QA_FILE"])
+
+    def test_execution_note_replaces_legacy_block_instead_of_duplicating_it(self):
+        state = self.root / "PROJECT.md"
+        with state.open("a", encoding="utf-8") as output:
+            output.write("\n<!-- research-talk:execution -->\nold note\n<!-- /research-talk:execution -->\n")
+        common.execution_note(self.root, "new note")
+        text = state.read_text(encoding="utf-8")
+        self.assertNotIn("old note", text)
+        self.assertNotIn("research-talk:execution", text)
+        self.assertEqual(text.count("<!-- motif:execution -->"), 1)
+        common.execution_note(self.root, "latest note")
+        text = state.read_text(encoding="utf-8")
+        self.assertEqual(text.count("<!-- motif:execution -->"), 1)
+        self.assertNotIn("new note", text)
+        self.assertIn("latest note", text)
 
     def test_discovery_marker_and_depth_are_meaningful(self):
         preferences = settings()

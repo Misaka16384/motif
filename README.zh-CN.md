@@ -1,10 +1,12 @@
-# Research Talk
+# Motif
 
-**找到报告的种子，沿一条主线讲清问题，用动画展示推理，并让项目随时可以接续。**
+**3Blue1Brown-inspired research presentations.**
+
+围绕一个问题组织报告，用动画让推理可见。
 
 面向科研作者的轻量 [Agent Skill](https://agentskills.io/)。作者熟悉自己的研究；模型帮助明确报告的初始动力和核心问题，组织叙事，制作关键片段打样，并完成经过审阅的动画报告。
 
-[English](README.md) · [Skill 指令](skills/research-talk/SKILL.md) · [下载发布版本](https://github.com/Misaka16384/research-talk/releases)
+[English](README.md) · [Skill 指令](skills/motif/SKILL.md) · [下载发布版本](https://github.com/Misaka16384/motif/releases)
 
 ## 动画演示
 
@@ -12,19 +14,19 @@
 
 ### 从局域规则生成全局图案
 
-[![细胞自动机生成对称性图案](docs/demos/ca-pattern.gif)](https://github.com/Misaka16384/research-talk/releases/download/v0.1.0/demo-ca-pattern.mp4)
+[![细胞自动机生成对称性图案](docs/demos/ca-pattern.gif)](https://github.com/Misaka16384/motif/releases/download/v0.1.0/demo-ca-pattern.mp4)
 
 先展示构造和动机，再在需要计算时引入记号。
 
 ### 让公式与图中的对象对应
 
-[![公式项与晶格对象对应](docs/demos/formula-to-figure.gif)](https://github.com/Misaka16384/research-talk/releases/download/v0.1.0/demo-formula-to-figure.mp4)
+[![公式项与晶格对象对应](docs/demos/formula-to-figure.gif)](https://github.com/Misaka16384/motif/releases/download/v0.1.0/demo-formula-to-figure.mp4)
 
 用颜色、位置和变换保留对应关系，让听众看到每一项的含义。
 
 ### 从守恒约束理解运动能力
 
-[![子系统对称荷守恒限制任意子的运动](docs/demos/mobility-constraints.gif)](https://github.com/Misaka16384/research-talk/releases/download/v0.1.0/demo-mobility-constraints.mp4)
+[![子系统对称荷守恒限制任意子的运动](docs/demos/mobility-constraints.gif)](https://github.com/Misaka16384/motif/releases/download/v0.1.0/demo-mobility-constraints.mp4)
 
 先看到哪些对称荷发生改变，再判断运动是否允许。
 
@@ -35,7 +37,7 @@ GIF 是小预览，MP4 保留原片段的分辨率和帧率。自带的另一个
 已有 Node/npm 时，在工作目录运行：
 
 ```bash
-npx skills add Misaka16384/research-talk --skill research-talk
+npx skills add Misaka16384/motif --skill motif
 ```
 
 通过标准 [`skills` 安装工具](https://github.com/vercel-labs/skills) 分发，支持 Codex、Claude Code、Cursor 等多个宿主。可以交互选择，也可以指定目标。
@@ -43,30 +45,32 @@ npx skills add Misaka16384/research-talk --skill research-talk
 默认是**项目级安装**：
 
 ```bash
-npx skills add Misaka16384/research-talk --skill research-talk -a codex -a claude-code
+npx skills add Misaka16384/motif --skill motif -a codex -a claude-code
 ```
 
 加入 `-g` 后是**用户级全局安装**，多个项目都可使用：
 
 ```bash
-npx skills add Misaka16384/research-talk --skill research-talk -a codex -a claude-code -g -y
+npx skills add Misaka16384/motif --skill motif -a codex -a claude-code -g -y
 ```
 
 各宿主决定自己的 skill 目录和调用方式。无需账号、MCP 服务器或外部生成服务；制作动画需要模型能访问本地文件并执行命令。
 
-也可从 [Releases](https://github.com/Misaka16384/research-talk/releases) 下载独立 skill ZIP，将 `research-talk/` 解压到宿主的 skill 目录。里面包括 `SKILL.md` 和全部运行资源。可选 plugin ZIP 保留仓库结构，普通 skill 安装无需额外配置插件。
+也可从 [Releases](https://github.com/Misaka16384/motif/releases) 下载独立 skill ZIP，将 `motif/` 解压到宿主的 skill 目录。里面包括 `SKILL.md` 和全部运行资源。可选 plugin ZIP 保留仓库结构，普通 skill 安装无需额外配置插件。
 
 检查更新：`npx skills check`。执行更新：`npx skills update`。
 
+如果以前安装的是 `research-talk`，请用上面的新命令安装并调用 `motif`；旧 skill 安装目录不会自动更名。已有报告项目仍可读取；新 Motif 注册表尚未创建时，会继续使用已有的默认注册记录。
+
 ## 怎么开始
 
-按宿主支持的方式调用 `research-talk`，例如：
+按宿主支持的方式调用 `motif`，例如：
 
-> 用 research-talk 帮我做一份 40 分钟的报告，材料是这两篇论文。听众包括外方向研究者。先与我讨论核心问题和主线；关键机制动画打样确认后，自主完成整份报告和审阅。
+> 用 motif 帮我做一份 40 分钟的报告，材料是这两篇论文。听众包括外方向研究者。先与我讨论核心问题和主线；关键机制动画打样确认后，自主完成整份报告和审阅。
 
 接续旧项目时：
 
-> 用 research-talk 查找我已有的报告项目，显示当前进展，从所选项目记录的下一步继续。
+> 用 motif 查找我已有的报告项目，显示当前进展，从所选项目记录的下一步继续。
 
 提供研究材料、想讲报告的原因，以及已知的公开范围。模型在影响叙事的地方追问，提出有依据的理解和可选重心，不强制填写固定问卷。
 
@@ -89,7 +93,7 @@ skill 保留了原报告中有效的问题意识：
 - 关键帧可停留讲解，屏幕文字学术、简洁。
 - 核对结论、引用和公开边界；共同机制不自动意味着概念包含或等价。
 
-详见 [核心指令](skills/research-talk/SKILL.md) 和 [审阅示例](skills/research-talk/references/review.md)。
+详见 [核心指令](skills/motif/SKILL.md) 和 [审阅示例](skills/motif/references/review.md)。
 
 ## 本地状态与不同 agent 接手
 
@@ -123,7 +127,7 @@ my-talk/
 
 `doctor` 明确标注正在检查的 Python，并列出有限范围内的复用候选，包括当前激活的 virtualenv／Conda 环境。管理 Python 缺依赖不代表现有渲染环境缺失。其他解释器可用 `doctor --python <路径>` 探测，再审阅输出中的 `setup --reuse` 计划，确定后绑定。
 
-管理命令支持 Python 3.10+。测试基线是 Manim 0.19.1、Manim Slides 5.7.0。示例公式需要 LaTeX/dvisvgm；PyAV 处理视频，独立 FFmpeg 可选。平台依赖由模型按官方指引和已同意的范围处理。完整命令见 [本地操作](skills/research-talk/references/operations.md)。
+管理命令支持 Python 3.10+。测试基线是 Manim 0.19.1、Manim Slides 5.7.0。示例公式需要 LaTeX/dvisvgm；PyAV 处理视频，独立 FFmpeg 可选。平台依赖由模型按官方指引和已同意的范围处理。完整命令见 [本地操作](skills/motif/references/operations.md)。
 
 Windows 和 Linux 已有包结构／逻辑测试的 CI 覆盖，macOS 运行兼容性尚未实测。本机依赖交给用户的 CLI agent 在同意的范围内解决，skill 不预设通用系统安装器；缺失依赖只阻塞依赖它的工作。
 
@@ -137,7 +141,7 @@ Windows 和 Linux 已有包结构／逻辑测试的 CI 覆盖，macOS 运行兼�
 
 用户要求且工具支持时执行独立审阅，没有 subagent 时单独审阅并如实记录。
 
-[渲染经验](skills/research-talk/references/rendering.md) 保留实际踩过的坑：并发缓存冲突、内存压力、孤儿进程、末帧定格、速度重复缩放、LaTeX 转义、帧率元数据误判和真实播放验证。
+[渲染经验](skills/motif/references/rendering.md) 保留实际踩过的坑：并发缓存冲突、内存压力、孤儿进程、末帧定格、速度重复缩放、LaTeX 转义、帧率元数据误判和真实播放验证。
 
 ## HTML / PPTX 输出
 
@@ -150,7 +154,7 @@ Windows 和 Linux 已有包结构／逻辑测试的 CI 覆盖，macOS 运行兼�
 
 **Office、WPS 自动播放需要真实播放器验证。** 正常进入放映，观察视频是否自行开始；不能点击播放后声称自动播放通过。记录应用版本和结果。ZIP/XML 与编解码检查不能替代实际播放，缺少某个应用时明确保留验证缺口。
 
-导出器保留了一份经报告者确认能在两个播放器中自动播放的时序机制。原始转换器只把视频延迟设为零，在实际 WPS 案例中并不充分，见 [自动播放案例与回归检查](skills/research-talk/references/pptx-autoplay.md)。新导出仍单独记录实际播放验证状态。
+导出器保留了一份经报告者确认能在两个播放器中自动播放的时序机制。原始转换器只把视频延迟设为零，在实际 WPS 案例中并不充分，见 [自动播放案例与回归检查](skills/motif/references/pptx-autoplay.md)。新导出仍单独记录实际播放验证状态。
 
 ## 验证与开发
 
@@ -164,7 +168,7 @@ python -m unittest discover -s tests
 python tools/package.py
 ```
 
-CI 在 Ubuntu、Windows 检查包与确定性逻辑，本地渲染和真实播放另行验证。推送与 `plugin.json` 一致的版本 tag 后生成两个 ZIP。[开发状态](PROJECT.md) 记录证据与待办。
+CI 在 Ubuntu、Windows 检查包与确定性逻辑，本地渲染和真实播放另行验证。推送与 `plugin.json` 一致的版本 tag 后生成两个 ZIP。[GitHub 上的开发状态](https://github.com/Misaka16384/motif/blob/main/PROJECT.md) 记录证据与待办。
 
 ## 许可与研究材料
 

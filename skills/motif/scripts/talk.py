@@ -12,7 +12,7 @@ from talklib import project, environment, build
 
 
 def parser():
-    result = argparse.ArgumentParser(description="Discover, prepare, render and export local research-talk projects.")
+    result = argparse.ArgumentParser(description="Discover, prepare, render and export local motif projects.")
     commands = result.add_subparsers(dest="command", required=True)
     discovery = commands.add_parser("discover", help="Find marked projects in bounded roots and the local registry")
     discovery.add_argument("--root", action="append", default=[])
@@ -20,7 +20,7 @@ def parser():
     discovery.add_argument("--limit", type=int, default=100)
     initializer = commands.add_parser("init", help="Create a new project without overwriting anything")
     initializer.add_argument("directory")
-    initializer.add_argument("--name", default="Research Talk")
+    initializer.add_argument("--name", default="Motif")
     initializer.add_argument("--no-register", action="store_true")
     roots = commands.add_parser("roots", help="Show or add project search roots")
     roots.add_argument("--add", action="append", default=[])

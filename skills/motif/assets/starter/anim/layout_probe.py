@@ -8,7 +8,7 @@ from manim.camera.camera import Camera
 
 
 def snapshot(scene):
-    target = Path(os.environ["RESEARCH_TALK_QA_FILE"])
+    target = Path(os.environ["MOTIF_QA_FILE"])
     texts, figures, seen = [], [], set()
 
     def visible(mob):
@@ -47,8 +47,8 @@ def snapshot(scene):
     separate.capture_mobjects(figures, include_submobjects=False)
     figure_mask = np.max(np.abs(separate.pixel_array[:, :, :3].astype(float) - background), axis=2) > 84
     findings = []
-    index = getattr(scene, "_research_talk_snapshot", 0) + 1
-    scene._research_talk_snapshot = index
+    index = getattr(scene, "_motif_snapshot", 0) + 1
+    scene._motif_snapshot = index
     cx, cy = camera.frame_center[:2]
     for text in texts:
         label = getattr(text, "tex_string", getattr(text, "text", text.__class__.__name__))[:180]
@@ -71,11 +71,11 @@ def snapshot(scene):
             if overlap_x > 0.03 and overlap_y > 0.03:
                 findings.append({"snapshot": index, "issue": "text bounding boxes intersect",
                                  "texts": [getattr(item, "tex_string", getattr(item, "text", "text"))[:100] for item in (a, b)]})
-    report = getattr(scene, "_research_talk_layout_report", {"snapshots": 0, "findings": [],
+    report = getattr(scene, "_motif_layout_report", {"snapshots": 0, "findings": [],
                   "limits": "End-beat samples only. Intentional labels may intersect figures; transient motion and semantic clarity require visual review."})
     report["snapshots"] = index
     report["findings"].extend(findings)
-    scene._research_talk_layout_report = report
+    scene._motif_layout_report = report
     target.parent.mkdir(parents=True, exist_ok=True)
     temporary = target.with_suffix(".tmp")
     temporary.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")

@@ -1,4 +1,0 @@
-interface:
-  display_name: "Research Talk"
-  short_description: "Research narratives and explanatory Manim slides"
-  default_prompt: "Use $research-talk to find or continue my local talk project, align on its central question, and create clear academic animations."

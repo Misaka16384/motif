@@ -7,7 +7,7 @@ import unittest
 import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT / "skills/research-talk/scripts"))
+sys.path.insert(0, str(ROOT / "skills/motif/scripts"))
 from talklib.build import validate_pptx
 from talklib.common import TalkError
 from talklib.pptx_autoplay import normalize_pptx

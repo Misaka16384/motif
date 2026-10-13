@@ -1,10 +1,12 @@
 ---
-name: research-talk
-description: Collaborate with a researcher to create or revise an academic talk using explanatory Manim animations and interactive slides. Use for shaping a research narrative, continuing a local talk project, producing a deck, or reviewing its scientific and visual clarity.
+name: motif
+description: Collaborate with a researcher to create or revise an academic talk with a coherent narrative and 3Blue1Brown-inspired Manim animations. Use for aligning the central question, continuing a local talk project, producing a deck, or reviewing its scientific and visual clarity.
 license: MIT
 ---
 
-# Research Talk
+# Motif
+
+3Blue1Brown-inspired research presentations. Build your talk around one question, and make the reasoning visible through animation.
 
 Work with an author who knows their research. Help sharpen and express their ideas; leave room for their judgment and yours. Explicit user instructions take precedence over these defaults.
 

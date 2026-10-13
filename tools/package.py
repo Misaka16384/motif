@@ -17,16 +17,16 @@ def package(output, kind="both"):
     output.mkdir(parents=True, exist_ok=True)
     outputs = []
     if kind in ("skill", "both"):
-        skill_root = ROOT / "skills/research-talk"
-        destination = output / f"research-talk-skill-{version}.zip"
+        skill_root = ROOT / "skills/motif"
+        destination = output / f"motif-skill-{version}.zip"
         with zipfile.ZipFile(destination, "w", zipfile.ZIP_DEFLATED) as archive:
             for path in sorted(skill_root.rglob("*")):
                 if path.is_file() and "__pycache__" not in path.parts:
-                    archive.write(path, Path("research-talk") / path.relative_to(skill_root))
+                    archive.write(path, Path("motif") / path.relative_to(skill_root))
         outputs.append(destination)
     if kind == "skill":
         return outputs
-    destination = output / f"research-talk-plugin-{version}.zip"
+    destination = output / f"motif-plugin-{version}.zip"
     excluded = {".git", "__pycache__", ".build", ".venv", ".runtime", "dist", "examples"}
     with zipfile.ZipFile(destination, "w", zipfile.ZIP_DEFLATED) as archive:
         for path in sorted(ROOT.rglob("*")):
@@ -34,7 +34,7 @@ def package(output, kind="both"):
                 continue
             if path.name == "PROJECT.md" and path.parent == ROOT:
                 continue  # Local development handoff, not skill material.
-            archive.write(path, Path("research-talk") / path.relative_to(ROOT))
+            archive.write(path, Path("motif") / path.relative_to(ROOT))
     outputs.append(destination)
     return outputs
 

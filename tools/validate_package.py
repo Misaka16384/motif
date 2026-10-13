@@ -7,17 +7,17 @@ import re
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
-SKILL = ROOT / "skills/research-talk"
+SKILL = ROOT / "skills/motif"
 
 
 def validate():
     issues = []
     manifest = json.loads((ROOT / "plugin.json").read_text(encoding="utf-8"))
-    if manifest.get("name") != "research-talk" or not re.fullmatch(r"\d+\.\d+\.\d+", manifest.get("version", "")):
+    if manifest.get("name") != "motif" or not re.fullmatch(r"\d+\.\d+\.\d+", manifest.get("version", "")):
         issues.append("Invalid package name/version")
     text = (SKILL / "SKILL.md").read_text(encoding="utf-8")
     header = text.split("---", 2)
-    if len(header) != 3 or not re.search(r"^name: research-talk$", header[1], re.MULTILINE) or not re.search(r"^description: .+", header[1], re.MULTILINE):
+    if len(header) != 3 or not re.search(r"^name: motif$", header[1], re.MULTILINE) or not re.search(r"^description: .+", header[1], re.MULTILINE):
         issues.append("Missing skill frontmatter")
     if len(text.splitlines()) > 160:
         issues.append("Entrypoint has grown beyond this package's intended concise scope")

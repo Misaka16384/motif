@@ -170,7 +170,8 @@ def render(root, config, profile="preview", selected=(), force=False, allow_low_
             qa_path = folder / "layout" / (scene["name"] + ".json")
             qa_path.unlink(missing_ok=True)
             env = run_environment(root, config)
-            env["RESEARCH_TALK_QA_FILE"] = str(qa_path)
+            env["MOTIF_QA_FILE"] = str(qa_path)
+            env["RESEARCH_TALK_QA_FILE"] = str(qa_path)  # Previously copied starters.
             argv = [python_executable(config), "-m", "manim_slides", "--silent", "render", "--CE",
                     f"--resolution={spec['width']},{spec['height']}", f"--fps={spec['fps']}",
                     "--media_dir", str(folder / "media"), "--progress_bar", "none",

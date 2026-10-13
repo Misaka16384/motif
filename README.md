@@ -1,32 +1,34 @@
-# Research Talk
+# Motif
 
-**Find the question. Make the reasoning visible. Keep the project ready to resume.**
+**3Blue1Brown-inspired research presentations.**
+
+Build your talk around one question, and make the reasoning visible through animation.
 
 A lightweight [Agent Skill](https://agentskills.io/) for researchers preparing academic talks with explanatory Manim animations. It helps an author and an agent sharpen the talk's starting question, develop a coherent narrative, build a meaningful pilot, and finish a reviewed presentation.
 
-[中文说明](README.zh-CN.md) · [Skill instructions](skills/research-talk/SKILL.md) · [Releases](https://github.com/Misaka16384/research-talk/releases)
+[中文说明](README.zh-CN.md) · [Skill instructions](skills/motif/SKILL.md) · [Releases](https://github.com/Misaka16384/motif/releases)
 
 ## See the approach
 
-These research-talk excerpts show three uses of animation: building a pattern from a local rule, connecting a formula to its physical objects, and exposing the constraint behind a mobility rule.
+These animation excerpts show three uses of animation: building a pattern from a local rule, connecting a formula to its physical objects, and exposing the constraint behind a mobility rule.
 
 ### A local rule becomes a global pattern
 
-[![A cellular automaton generates a symmetry pattern](docs/demos/ca-pattern.gif)](https://github.com/Misaka16384/research-talk/releases/download/v0.1.0/demo-ca-pattern.mp4)
+[![A cellular automaton generates a symmetry pattern](docs/demos/ca-pattern.gif)](https://github.com/Misaka16384/motif/releases/download/v0.1.0/demo-ca-pattern.mp4)
 
-The construction is shown before its notation becomes central. [Watch or download the 1440p60 excerpt](https://github.com/Misaka16384/research-talk/releases/download/v0.1.0/demo-ca-pattern.mp4).
+The construction is shown before its notation becomes central. [Watch or download the 1440p60 excerpt](https://github.com/Misaka16384/motif/releases/download/v0.1.0/demo-ca-pattern.mp4).
 
 ### A formula stays connected to the figure
 
-[![Formula terms correspond to objects on a lattice](docs/demos/formula-to-figure.gif)](https://github.com/Misaka16384/research-talk/releases/download/v0.1.0/demo-formula-to-figure.mp4)
+[![Formula terms correspond to objects on a lattice](docs/demos/formula-to-figure.gif)](https://github.com/Misaka16384/motif/releases/download/v0.1.0/demo-formula-to-figure.mp4)
 
-Objects, colors and formula terms retain their correspondence as the calculation unfolds. [Watch or download the 1440p60 excerpt](https://github.com/Misaka16384/research-talk/releases/download/v0.1.0/demo-formula-to-figure.mp4).
+Objects, colors and formula terms retain their correspondence as the calculation unfolds. [Watch or download the 1440p60 excerpt](https://github.com/Misaka16384/motif/releases/download/v0.1.0/demo-formula-to-figure.mp4).
 
 ### A conservation law explains mobility
 
-[![Subsystem charge conservation constrains anyon mobility](docs/demos/mobility-constraints.gif)](https://github.com/Misaka16384/research-talk/releases/download/v0.1.0/demo-mobility-constraints.mp4)
+[![Subsystem charge conservation constrains anyon mobility](docs/demos/mobility-constraints.gif)](https://github.com/Misaka16384/motif/releases/download/v0.1.0/demo-mobility-constraints.mp4)
 
-The audience sees which charges change under a proposed motion and why a motion is allowed or forbidden. [Watch or download the 1440p60 excerpt](https://github.com/Misaka16384/research-talk/releases/download/v0.1.0/demo-mobility-constraints.mp4).
+The audience sees which charges change under a proposed motion and why a motion is allowed or forbidden. [Watch or download the 1440p60 excerpt](https://github.com/Misaka16384/motif/releases/download/v0.1.0/demo-mobility-constraints.mp4).
 
 The GIFs are small previews. The MP4s preserve the excerpt resolution and frame rate. The skill's starter scenes use a separate generic example; each project's scientific content is developed with its author.
 
@@ -35,7 +37,7 @@ The GIFs are small previews. The MP4s preserve the excerpt resolution and frame 
 With Node/npm available, run this in your workspace:
 
 ```bash
-npx skills add Misaka16384/research-talk --skill research-talk
+npx skills add Misaka16384/motif --skill motif
 ```
 
 The standard [`skills` installer](https://github.com/vercel-labs/skills) supports multiple agents, including Codex, Claude Code and Cursor. Choose agents interactively or specify them explicitly.
@@ -43,30 +45,32 @@ The standard [`skills` installer](https://github.com/vercel-labs/skills) support
 **Project installation** is the default:
 
 ```bash
-npx skills add Misaka16384/research-talk --skill research-talk -a codex -a claude-code
+npx skills add Misaka16384/motif --skill motif -a codex -a claude-code
 ```
 
 **User-level installation**, available across projects, adds `-g`:
 
 ```bash
-npx skills add Misaka16384/research-talk --skill research-talk -a codex -a claude-code -g -y
+npx skills add Misaka16384/motif --skill motif -a codex -a claude-code -g -y
 ```
 
 No account, MCP server or external generation service is required by this skill. Rendering needs an agent with local file/shell access. The host determines its skill directory and invocation method.
 
-For manual installation, download the **standalone skill ZIP** from [Releases](https://github.com/Misaka16384/research-talk/releases), then extract `research-talk/` into your host's skill directory. It contains `SKILL.md` and all resources. The optional **plugin ZIP** preserves the repository/plugin layout; ordinary skill installation needs no additional plugin configuration.
+For manual installation, download the **standalone skill ZIP** from [Releases](https://github.com/Misaka16384/motif/releases), then extract `motif/` into your host's skill directory. It contains `SKILL.md` and all resources. The optional **plugin ZIP** preserves the repository/plugin layout; ordinary skill installation needs no additional plugin configuration.
 
 Check for updates with `npx skills check`, then update with `npx skills update`.
 
+For installations under the former `research-talk` name, install using the Motif command above and invoke `motif`; an old skill installation is not renamed automatically. Existing report projects remain readable, and an existing default registry is reused when the new Motif registry has not been created.
+
 ## Start a talk
 
-Invoke `research-talk` using your agent's skill mechanism. For example:
+Invoke `motif` using your agent's skill mechanism. For example:
 
-> Use research-talk to prepare a 40-minute talk from these papers. The audience includes researchers outside my specialty. First discuss the central question and narrative with me. After we approve a mechanism animation as the pilot, complete the draft and review it autonomously.
+> Use motif to prepare a 40-minute talk from these papers. The audience includes researchers outside my specialty. First discuss the central question and narrative with me. After we approve a mechanism animation as the pilot, complete the draft and review it autonomously.
 
 To resume:
 
-> Use research-talk to find my existing talk projects and show their current state. Continue the selected project from its recorded next step.
+> Use motif to find my existing talk projects and show their current state. Continue the selected project from its recorded next step.
 
 Supply research material, the reason for the talk, and disclosure limits you already know. The agent asks focused questions where the answer affects the story. It proposes a grounded interpretation rather than requiring a fixed questionnaire.
 
@@ -89,7 +93,7 @@ The skill retains the lessons that mattered in the original talk:
 - Hold key states for live explanation, with academic and economical on-screen text.
 - Verify claims and attribution; distinguish related mechanisms from equivalence between concepts.
 
-See [the core skill](skills/research-talk/SKILL.md) and [review examples](skills/research-talk/references/review.md).
+See [the core skill](skills/motif/SKILL.md) and [review examples](skills/motif/references/review.md).
 
 ## A project another agent can resume
 
@@ -127,7 +131,7 @@ The management CLI supports Python 3.10+. The tested rendering baseline uses Man
 
 Windows and Linux have package/logic CI coverage. macOS runtime compatibility has not been verified. The host CLI agent resolves local prerequisites within the agreed scope; the skill does not prescribe a universal system installer. Missing prerequisites only block work that depends on them.
 
-See [local operations](skills/research-talk/references/operations.md) for detection, installation scope, external prerequisites and exact commands.
+See [local operations](skills/motif/references/operations.md) for detection, installation scope, external prerequisites and exact commands.
 
 ## Rendering and review
 
@@ -139,7 +143,7 @@ Checks cover dimensions, decoded frame cadence, stale/missing media, clipping an
 
 Independent review is useful after a full draft and is included when requested and supported by the host. Without subagents, a separate review pass is recorded honestly.
 
-[Rendering lessons](skills/research-talk/references/rendering.md) preserve cache/file-lock collisions, memory pressure, surviving child processes, final-frame holds, double-scaled waits, LaTeX escaping, misleading frame-rate headers and playback checks.
+[Rendering lessons](skills/motif/references/rendering.md) preserve cache/file-lock collisions, memory pressure, surviving child processes, final-frame holds, double-scaled waits, LaTeX escaping, misleading frame-rate headers and playback checks.
 
 ## HTML and PPTX
 
@@ -152,7 +156,7 @@ Exports enter a new versioned directory after the selected formats pass validati
 
 **Office/WPS autoplay requires a real-player check.** Verify slide-entry playback in both Microsoft PowerPoint and WPS Presentation where available, without clicking Play. Record versions and observations. ZIP/XML timing and codec checks alone do not prove compatibility. An unavailable player remains explicitly unverified.
 
-The exporter preserves the timing mechanism from a presentation reported working in both players. A raw converter's zero-delay video flag was not sufficient in the observed WPS failure. See [the autoplay case and regression checks](skills/research-talk/references/pptx-autoplay.md). Fresh exports retain their own verification status.
+The exporter preserves the timing mechanism from a presentation reported working in both players. A raw converter's zero-delay video flag was not sufficient in the observed WPS failure. See [the autoplay case and regression checks](skills/motif/references/pptx-autoplay.md). Fresh exports retain their own verification status.
 
 ## Verification and development
 
@@ -166,7 +170,7 @@ python -m unittest discover -s tests
 python tools/package.py
 ```
 
-CI checks package/tool logic on Ubuntu and Windows. Render/export integration and actual player tests remain separate. A version tag matching `plugin.json` triggers the workflow that creates both release ZIPs. [Development handoff](PROJECT.md) records evidence and pending work.
+CI checks package/tool logic on Ubuntu and Windows. Render/export integration and actual player tests remain separate. A version tag matching `plugin.json` triggers the workflow that creates both release ZIPs. The [development handoff on GitHub](https://github.com/Misaka16384/motif/blob/main/PROJECT.md) records evidence and pending work.
 
 ## License and research material
 

@@ -1,8 +1,8 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
-  "name": "research-talk",
-  "version": "0.1.2",
-  "description": "Collaborative research narratives, explanatory Manim slides, and persistent local projects.",
+  "name": "motif",
+  "version": "0.2.0",
+  "description": "3Blue1Brown-inspired research presentations, built around one question.",
   "license": "MIT",
   "keywords": ["research", "presentations", "manim", "agent-skills"]
 }
