@@ -19,6 +19,7 @@ Build a lightweight, distributable skill for researchers who know their work. Th
 - Retain practical rendering, cache, memory, interruption and playback lessons in the skill.
 - PPTX must autoplay on slide entry; verify Office and WPS behavior before claiming compatibility.
 - Keep scripts limited to deterministic local operations; narrative and workflow decisions remain with the model/user.
+- Public READMEs must not disclose the user's name, paper identifiers or source-paper links; demonstration descriptions stay generic.
 
 ## Current state
 

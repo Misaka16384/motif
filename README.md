@@ -8,7 +8,7 @@ A lightweight [Agent Skill](https://agentskills.io/) for researchers preparing a
 
 ## See the approach
 
-These excerpts come from Jie-Yu Zhang's research talk on higher-order cellular automata (HOCA). They show three uses of animation: building a pattern from a local rule, connecting a formula to its physical objects, and exposing the constraint behind a mobility rule. The mathematical content comes from [arXiv:2401.00505](https://arxiv.org/abs/2401.00505) and [arXiv:2508.13961](https://arxiv.org/abs/2508.13961).
+These research-talk excerpts show three uses of animation: building a pattern from a local rule, connecting a formula to its physical objects, and exposing the constraint behind a mobility rule.
 
 ### A local rule becomes a global pattern
 
@@ -162,4 +162,4 @@ CI checks package/tool logic on Ubuntu and Windows. Render/export integration an
 
 ## License and research material
 
-MIT for the skill and toolkit. Bundled Tomli 2.4.1 retains its MIT license. Demonstration excerpts are shared with the author's permission and credited above; the cited papers describe their scientific content. Private research belongs in its authorized local project and must not be copied into the skill or a public release.
+MIT for the skill and toolkit. Bundled Tomli 2.4.1 retains its MIT license. Demonstration media are shared by permission for project demonstrations and are excluded from the toolkit's MIT license. Private research belongs in its authorized local project and must not be copied into the skill or a public release.
