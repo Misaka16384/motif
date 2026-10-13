@@ -6,7 +6,7 @@
 
 面向科研作者的轻量 [Agent Skill](https://agentskills.io/)。作者熟悉自己的研究；模型帮助明确报告的初始动力和核心问题，组织叙事，制作关键片段打样，并完成经过审阅的动画报告。
 
-[English](README.md) · [Skill 指令](skills/motif/SKILL.md) · [下载发布版本](https://github.com/Misaka16384/motif/releases)
+[English](README.md) · [安装](#安装) · [Skill 指令](skills/motif/SKILL.md) · [下载发布版本](https://github.com/Misaka16384/motif/releases)
 
 ## 动画演示
 
@@ -32,7 +32,24 @@
 
 GIF 是小预览，MP4 保留原片段的分辨率和帧率。自带的另一个通用数学示例用于环境测试；每份报告的科学内容由作者和模型共同确定。
 
-## 一条命令安装
+## 安装
+
+需要引导式安装时，把这一句发给能操作本地环境的 AI：
+
+> 请阅读 https://github.com/Misaka16384/motif，并按 README 帮我安装 Motif。
+
+### 人和 AI 共用的安装指引
+
+收到安装请求后，按以下清单操作，并沿用用户已经明确的选择：
+
+1. **确定安装位置。** 检查当前 AI 宿主、工作目录和已有 Motif 安装。只确认尚未明确的选择：安装给哪些宿主，以及项目级或用户级。项目级安装使用用户选定的工作目录。
+2. **在选定范围安装。** 使用下方标准安装器，指定选定宿主；用户级加入 `-g`。选择确定后直接执行，不重复询问同一批准。没有 Node/npm 时，可使用宿主支持的 skill 安装方式或独立 ZIP，或先确定前置工具的安装范围。
+3. **验证安装后的副本。** 确认 `SKILL.md` 中的名称为 `motif`、引用的脚本和资源齐全，且宿主能发现该 skill。已有 Python 3.10+ 时，运行安装副本的 `scripts/talk.py --help`。报告实际路径，以及是否还需要重载宿主；文件存在不等于宿主已经加载。
+4. **单独安排渲染环境。** 获得动画制作授权后，按[环境指引](#环境安装也有独立范围)和已安装的 skill 准备渲染环境。仅安装 skill 不要求渲染演示或新建报告项目。
+
+无法在本地执行时，说明用户需要运行哪些步骤，并明确标记尚未完成的验证。某个前置条件只影响一个步骤时，继续处理其他工作。
+
+### 安装命令
 
 已有 Node/npm 时，在工作目录运行：
 
@@ -40,7 +57,7 @@ GIF 是小预览，MP4 保留原片段的分辨率和帧率。自带的另一个
 npx skills add Misaka16384/motif --skill motif
 ```
 
-通过标准 [`skills` 安装工具](https://github.com/vercel-labs/skills) 分发，支持 Codex、Claude Code、Cursor 等多个宿主。可以交互选择，也可以指定目标。
+通过标准 [`skills` 安装工具](https://github.com/vercel-labs/skills) 分发，支持 Codex、Claude Code、Cursor 等多个宿主。可以交互选择，也可以指定目标。下方示例选择 Codex 和 Claude Code，实际使用选定宿主对应的参数；安装选择确认后，可加 `-y` 跳过安装器提示。
 
 默认是**项目级安装**：
 

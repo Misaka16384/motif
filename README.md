@@ -6,7 +6,7 @@ Build your talk around one question, and make the reasoning visible through anim
 
 A lightweight [Agent Skill](https://agentskills.io/) for researchers preparing academic talks with explanatory Manim animations. It helps an author and an agent sharpen the talk's starting question, develop a coherent narrative, build a meaningful pilot, and finish a reviewed presentation.
 
-[中文说明](README.zh-CN.md) · [Skill instructions](skills/motif/SKILL.md) · [Releases](https://github.com/Misaka16384/motif/releases)
+[中文说明](README.zh-CN.md) · [Install](#install) · [Skill instructions](skills/motif/SKILL.md) · [Releases](https://github.com/Misaka16384/motif/releases)
 
 ## See the approach
 
@@ -34,13 +34,30 @@ The GIFs are small previews. The MP4s preserve the excerpt resolution and frame 
 
 ## Install
 
+For guided installation, send your local AI assistant this request:
+
+> Please read https://github.com/Misaka16384/motif and help me install Motif following its README.
+
+### Installation guide for people and AI assistants
+
+For an installation request, use the following checklist and honor choices the user has already specified:
+
+1. **Identify the destination.** Check the current AI host, workspace and any existing Motif installation. Resolve only missing choices: which hosts to install for, and project or user scope. For project scope, use the selected workspace.
+2. **Install in the chosen scope.** Use the standard installer below with the selected agent flags; add `-g` for user scope. Once the choices are settled, execute without asking for the same approval again. If Node/npm is unavailable, use the host's supported skill-installation method or the standalone ZIP, or agree on the scope of any prerequisite installation.
+3. **Verify the installed copy.** Confirm that its `SKILL.md` names `motif`, referenced scripts/assets are present, and the host can discover the skill. If Python 3.10+ is already available, run the installed `scripts/talk.py --help`. Report the installed path and any host reload still needed; file presence alone does not prove that the host has loaded it.
+4. **Separate rendering setup.** Preparing a rendering environment belongs to authorized animation production; follow [the environment guide](#environment-a-separate-scope-choice) and the installed skill then. A skill-installation request does not require a demo render or a new talk project.
+
+If local execution is unavailable, explain which steps the user needs to run and leave unperformed verification clearly identified. Keep the remaining work moving when a prerequisite affects only one step.
+
+### Installer commands
+
 With Node/npm available, run this in your workspace:
 
 ```bash
 npx skills add Misaka16384/motif --skill motif
 ```
 
-The standard [`skills` installer](https://github.com/vercel-labs/skills) supports multiple agents, including Codex, Claude Code and Cursor. Choose agents interactively or specify them explicitly.
+The standard [`skills` installer](https://github.com/vercel-labs/skills) supports multiple agents, including Codex, Claude Code and Cursor. Choose agents interactively or specify them explicitly. The examples below target Codex and Claude Code; use the flags for the hosts you selected. Add `-y` after resolving the installation choices to run without installer prompts.
 
 **Project installation** is the default:
 
