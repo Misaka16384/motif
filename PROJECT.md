@@ -24,13 +24,13 @@ Build a lightweight, distributable skill for researchers who know their work. Th
 ## Current state
 
 - Brand: Motif — 3Blue1Brown-inspired research presentations. User authorized renaming the public repository, skill entry point, docs and package identifiers consistently.
-- Version: 0.2.0 rename implemented; local tests and legacy-project probes passed. Final ZIP link recheck and publication/install verification remain. Latest published version 0.1.2 remains preserved.
+- Version: 0.2.0 released as Motif; rename, legacy-project compatibility, packaging, CI and isolated public installation verified. Earlier tags/releases remain preserved.
 - Implemented: core skill, references, generic starter, local project discovery/setup/build/check/export/preview, logic tests, release packaging.
 - Passed: package/skill validation, 35 logic tests (one Windows-only symlink skip), actual formula compilation and smoke render, final 2560×1440/60 fps render, frame-cadence checks, HTML/PPTX export, and cache reuse. Rendering/player evidence is from earlier releases; this rename does not claim a new render or player test.
 - Independent review: completed; findings about early setup, environment replacement discovery, ZIP layout, scene selection and video timing/target validation were corrected and rechecked.
 - Generic example: `examples/demo/`; final export pointer: `examples/demo/deck/latest-final.json`. Generated files are excluded from Git/distribution.
 - Player verification: package, H.264/yuv420p and automatic-start timing checks passed; actual browser/Office/WPS playback has not been tested. WPS executable was not found on this host during detection.
-- Publishing: user explicitly approved the public repository; rename target is `https://github.com/Misaka16384/motif`.
+- Publishing: user explicitly approved the public repository; canonical URL is `https://github.com/Misaka16384/motif` with the approved subtitle in its description.
 - Cross-platform CI: Ubuntu and Windows jobs passed for commit `9795716` (run `38360587231`).
 - Release archives: standalone skill and optional plugin ZIPs built locally for 0.1.0.
 - Installer integration: `skills` 1.7.2 installed from the public repository into an isolated project; copied CLI, starter resources, project creation and discovery passed. Host execution was needed for this machine's Git credentials; no global skills/settings were changed.
@@ -53,7 +53,11 @@ Build a lightweight, distributable skill for researchers who know their work. Th
 
 ## Next step
 
-Finish the approved rename release: GitHub repository is now motif; commit/push final source, publish v0.2.0, verify release assets and isolated installer, then record completion. Local evidence: `.runtime/verify-motif/` (35 tests; existing demo/trial status, doctor and discovery passed; 88 config/record/settings paths unchanged). Packaged README links to excluded development state were corrected to GitHub links and are being rechecked. Source checkout path remains unchanged to preserve generated local media/cache references; no private talk or ignored trial artifacts are renamed.
+No authorized implementation remains. Motif v0.2.0: `https://github.com/Misaka16384/motif/releases/tag/v0.2.0`. Tagged source commit `ea680d9`; Windows/Linux validation and release jobs passed (runs `38387798899`, `38387879961`, `38387879900`). Both assets verified: `motif-skill-0.2.0.zip` (56,153 bytes), `motif-plugin-0.2.0.zip` (2,134,822 bytes). Original demo videos remain under the renamed repository's v0.1.0 release.
+
+Local evidence: `.runtime/verify-motif/` (35 tests; existing demo/trial status, doctor and discovery passed; 88 config/record/settings paths unchanged). Final ZIP audit passed after correcting packaged README development-state links. Installer `skills` 1.7.2 installed Motif into an isolated project for Codex/Claude Code; all 28 skill files match the pushed source, and the copied CLI's help/init/discover/status passed. No global skill/config installation, new render or native player check was performed. Reports: `report-final.md`, `installer-report.md`. Initial network timeouts recovered with bounded retries; no global Git transport setting changed.
+
+Source checkout path remains unchanged to preserve generated local media/cache references; no private talk or ignored trial artifacts are renamed. Legacy project markers, registry override/default location and copied-scene rendering variables remain supported; new public names and markers use motif/Motif/MOTIF_HOME.
 
 Previous release v0.1.2 remains preserved at `https://github.com/Misaka16384/motif/releases/tag/v0.1.2`; both standalone skill and plugin ZIPs verified present (56,156 and 2,134,434 bytes). Tagged commit `ea0059d`; Windows/Linux validation and release workflows passed (runs `38374724555`, `38374730440`, `38374730351`).
 
