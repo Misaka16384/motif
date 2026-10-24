@@ -296,6 +296,36 @@ class ToolkitTests(unittest.TestCase):
         with self.assertRaises(TalkError):
             build.validate_html(html)
 
+    def test_normalize_html_injects_memory_guard_and_patches_reveal_unload(self):
+        html = self.root / "deck/talk.html"
+        assets = self.root / "deck/talk_assets"
+        assets.mkdir(parents=True, exist_ok=True)
+        html.write_text(
+            "<html><body><script>Reveal.initialize({\n"
+            "  viewDistance: 3,\n"
+            "  mobileViewDistance: 2,\n"
+            "});</script>\n  </body>\n</html>\n",
+            encoding="utf-8",
+        )
+        reveal = assets / "reveal.js"
+        reveal.write_text(
+            "n&&(n.style.display=`none`,t(n,`iframe[src]`).forEach(e=>{e.removeAttribute(`src`)}));"
+            "let a=B.isActive(),o=a?10:f.viewDistance;g&&(o=a?6:f.mobileViewDistance);",
+            encoding="utf-8",
+        )
+        first = build.normalize_html(html)
+        second = build.normalize_html(html)  # idempotent on repeated calls
+        self.assertTrue(first["patched_reveal_js"])
+        self.assertFalse(second["patched_reveal_js"])
+        patched_html = html.read_text(encoding="utf-8")
+        patched_reveal = reveal.read_text(encoding="utf-8")
+        self.assertIn("viewDistance: 2,", patched_html)
+        self.assertIn("mobileViewDistance: 1,", patched_html)
+        self.assertEqual(patched_html.count("Motif Memory Guard"), 1)
+        self.assertIn("t(n,`video`).forEach", patched_reveal)
+        self.assertEqual(patched_reveal.count("n.removeAttribute(`data-loaded`)"), 1)
+        self.assertIn("o=a?2:f.viewDistance", patched_reveal)
+
     def test_unknown_selection_does_not_pass_an_empty_check(self):
         with self.assertRaises(TalkError):
             build.check(self.root, self.config, "preview", ["Typo"])

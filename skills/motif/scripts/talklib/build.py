@@ -241,6 +241,84 @@ class LocalReferences(HTMLParser):
                 self.references.append(unquote(parsed.path))
 
 
+def normalize_html(path):
+    """Ensure RevealJS HTML exports deterministically release off-screen background <video> decoders."""
+    path = Path(path)
+    html = path.read_text(encoding="utf-8")
+    html = html.replace("viewDistance: 3,", "viewDistance: 2,")
+    html = html.replace("mobileViewDistance: 2,", "mobileViewDistance: 1,")
+    guard = """      // Motif Memory Guard: deterministically release off-screen background <video> decoders
+      (function() {
+        function releaseSlideVideo(slide) {
+          if (!slide) return;
+          var bg = slide.slideBackgroundElement;
+          var content = slide.slideBackgroundContentElement || bg;
+          if (!bg || !content) return;
+          var videos = content.querySelectorAll('video');
+          for (var i = 0; i < videos.length; i++) {
+            var v = videos[i];
+            try {
+              v.pause();
+              v.removeAttribute('src');
+              while (v.firstChild) v.removeChild(v.firstChild);
+              v.load();
+              v.remove();
+            } catch (e) {}
+          }
+          bg.removeAttribute('data-loaded');
+        }
+        function pruneVideos() {
+          var slides = Reveal.getSlides();
+          var current = Reveal.getCurrentSlide();
+          var idx = slides.indexOf(current);
+          if (idx === -1) return;
+          var keep = (Reveal.getConfig && Reveal.getConfig().viewDistance) || 2;
+          for (var i = 0; i < slides.length; i++) {
+            if (Math.abs(i - idx) >= keep) {
+              releaseSlideVideo(slides[i]);
+            }
+          }
+        }
+        if (Reveal.slideContent && typeof Reveal.slideContent.unload === 'function') {
+          var origUnload = Reveal.slideContent.unload.bind(Reveal.slideContent);
+          Reveal.slideContent.unload = function(slide) {
+            origUnload(slide);
+            releaseSlideVideo(slide);
+          };
+        }
+        Reveal.on('ready', pruneVideos);
+        Reveal.on('slidechanged', pruneVideos);
+        Reveal.on('overviewshown', pruneVideos);
+      })();
+    </script>"""
+    if "Motif Memory Guard" not in html and "</script>" in html:
+        idx = html.rfind("</script>")
+        html = html[:idx] + guard + html[idx + len("</script>"):]
+    path.write_text(html, encoding="utf-8")
+
+    reveal_js = path.parent / (path.stem + "_assets") / "reveal.js"
+    patched_reveal = False
+    if reveal_js.is_file():
+        js = reveal_js.read_text(encoding="utf-8")
+        old_unload = "n&&(n.style.display=`none`,t(n,`iframe[src]`).forEach(e=>{e.removeAttribute(`src`)}))"
+        new_unload = (
+            "n&&(n.style.display=`none`,t(n,`iframe[src]`).forEach(e=>{e.removeAttribute(`src`)}),"
+            "t(n,`video`).forEach(e=>{try{e.pause(),e.removeAttribute(`src`);for(;e.firstChild;)e.removeChild(e.firstChild);e.load(),e.remove()}catch{}}),"
+            "n.removeAttribute(`data-loaded`))"
+        )
+        old_dist = "let a=B.isActive(),o=a?10:f.viewDistance;g&&(o=a?6:f.mobileViewDistance)"
+        new_dist = "let a=B.isActive(),o=a?2:f.viewDistance;g&&(o=a?1:f.mobileViewDistance)"
+        if old_unload in js:
+            js = js.replace(old_unload, new_unload)
+            patched_reveal = True
+        if old_dist in js:
+            js = js.replace(old_dist, new_dist)
+            patched_reveal = True
+        if patched_reveal:
+            reveal_js.write_text(js, encoding="utf-8")
+    return {"video_memory_guard": True, "patched_reveal_js": patched_reveal, "view_distance": 2}
+
+
 def validate_html(path):
     parser = LocalReferences()
     parser.feed(Path(path).read_text(encoding="utf-8"))
@@ -299,7 +377,7 @@ def export(root, config, profile="preview", formats=("html",), one_file=False):
                 argv = [python_executable(config), "-m", "manim_slides", "--silent", "convert",
                         "--folder", str(folder / "slides"), "--to", format_name]
                 if format_name == "html":
-                    argv += ["--offline", "-cslide_number=true"]
+                    argv += ["--offline", "-cslide_number=true", "-cview_distance=2", "-cmobile_view_distance=1"]
                     if one_file:
                         argv.append("--one-file")
                 else:
@@ -310,7 +388,8 @@ def export(root, config, profile="preview", formats=("html",), one_file=False):
                 if not target.is_file() or target.stat().st_size == 0:
                     raise TalkError(f"Converter returned without a usable output: {target}")
                 if format_name == "html":
-                    outputs[format_name] = validate_html(target)
+                    normalization = normalize_html(target)
+                    outputs[format_name] = dict(validate_html(target), **normalization)
                 else:
                     normalization = normalize_pptx(target)
                     outputs[format_name] = dict(validate_pptx(target, beats), **normalization)
